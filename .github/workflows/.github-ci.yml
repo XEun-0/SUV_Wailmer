@@ -7,30 +7,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the code
-        uses: actions/checkout@v2
-      - name: Build with Kaniko
-        uses: aevea/action-kaniko@master
-        with:
-          registry: ghcr.io
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image: kaniko
-          cache: true
-          cache_registry: cache
-      - name: Build Docker image with Kaniko
-        run: |
-          echo "<<<<Building Docker image with Kaniko>>>>>>>"
-          pwd
-          /kaniko/executor \
-            --dockerfile /github/workspace/Dockerfile \
-            --context dir:///github/workspace \
-            --oci-layout-path /github/workspace/oci-layout
-          echo "<<<<Building Docker image with Kaniko FINISHED>>>>>>>"
+    runs-on: [kaniko-worker]
+    container:
+      image: gcr.io/kaniko-project/executor:debug
+    permissions:
+      contents: read
+      packages: write
 
-      - name: Save OCI layout as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: oci-layout
-          path: ./oci-layout
+    steps:
+      - name: Build and push container test
+        run: |
+          # Write config file
+          AUTH=$(echo -n ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} | base64)
+          echo "{\"auths\": {\"ghcr.io\": {\"auth\": \"${AUTH}\"}}}" > /kaniko/.docker/config.json
+
+          # Configure git
+          export GIT_USERNAME="kaniko-bot"
+          export GIT_PASSWORD="${{ secrets.GITHUB_TOKEN }}"
+
+          # Build and push
+          /kaniko/executor --dockerfile="./images/ubi9.Dockerfile" \
+            --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
+            --destination="ghcr.io/some-natalie/kubernoodles/kaniko-build:test" \
+            --push-retry 5 \
+            --image-name-with-digest-file /workspace/image-digest.txt
