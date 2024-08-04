@@ -14,12 +14,11 @@ jobs:
       - name: Build with Kaniko
         uses: aevea/action-kaniko@master
         with:
-          image: aevea/kaniko
-          #username: ${{ secrets.DOCKERHUB_USERNAME }}
-          #password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: ghcr.io
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image: kaniko
           cache: true
-          cache_registry: aevea/cache
-
+          cache_registry: cache
       - name: Build Docker image with Kaniko
         run: |
           pwd
