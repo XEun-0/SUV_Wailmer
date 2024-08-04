@@ -21,11 +21,13 @@ jobs:
           cache_registry: cache
       - name: Build Docker image with Kaniko
         run: |
+          echo "<<<<Building Docker image with Kaniko>>>>>>>"
           pwd
           /kaniko/executor \
             --dockerfile /github/workspace/Dockerfile \
             --context dir:///github/workspace \
             --oci-layout-path /github/workspace/oci-layout
+          echo "<<<<Building Docker image with Kaniko FINISHED>>>>>>>"
 
       - name: Save OCI layout as artifact
         uses: actions/upload-artifact@v2
