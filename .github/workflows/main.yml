@@ -1,0 +1,29 @@
+name: Build and Push Docker Image with Kaniko
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: gcr.io/kaniko-project/executor:latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image with Kaniko
+        run: |
+          /kaniko/executor \
+            --dockerfile /github/workspace/Dockerfile \
+            --context dir:///github/workspace \
+            --oci-layout-path /github/workspace/oci-layout
+
+      - name: Save OCI layout as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: oci-layout
+          path: ./oci-layout
