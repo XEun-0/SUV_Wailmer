@@ -1,0 +1,10 @@
+#!/bin/bash
+
+docker ps
+# Check if an argument was passed
+if [ $# -eq 0 ]; then
+  echo "No arguments provided. Running default command."
+else
+  echo "Showing bash processes for container: $1"
+  docker exec $1 ps aux | grep bash
+fi

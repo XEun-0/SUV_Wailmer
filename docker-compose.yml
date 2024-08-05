@@ -1,0 +1,15 @@
+services:
+  ROS2:
+    image: ros2
+    tty: true
+    container_name: ROS2
+    volumes:
+      - ./:/workspaces/ROS2-SW
+
+  ROS2-Base:
+    image: ros2-base
+    tty: true
+    container_name: ROS2-Base
+    volumes:
+      - ./:/workspaces/ROS2-SW
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw"
