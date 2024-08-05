@@ -1,5 +1,7 @@
+ARG BASE_IMAGE=arm64v8/ubuntu:22.04
+
 # Use an appropriate base image
-FROM osrf/ros:humble-desktop-full
+FROM ${BASE_IMAGE}
 
 COPY setup_ros2_base_suite.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
