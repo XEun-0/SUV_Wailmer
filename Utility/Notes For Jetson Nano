@@ -1,0 +1,7 @@
+most of the scripts, for now, need to be run with "sudo bash ./script_name"
+
+aliases:
+	rnbash
+
+for arduino cli:
+	arduino-cli boards list

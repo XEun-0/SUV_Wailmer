@@ -10,6 +10,8 @@ services:
     image: ros2-base
     tty: true
     container_name: ROS2-Base
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
       - ./:/workspace/ROS2-SW
       - /tmp/.X11-unix:/tmp/.X11-unix:rw"
