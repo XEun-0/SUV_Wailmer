@@ -13,3 +13,9 @@ services:
     volumes:
       - ./:/workspace/ROS2-SW
       - /tmp/.X11-unix:/tmp/.X11-unix:rw"
+  
+  # MCU-Loader:
+  #   image:
+  #   tty: true
+  #   container_name: MCU-Loader
+  #   volumes:

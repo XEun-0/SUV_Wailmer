@@ -8,6 +8,23 @@ docker build --network=host -f Dockerfile -t ros2-base .
 cd ../
 
 docker compose up -d
-docker compose logs -f ROS2
+docker compose logs -f ROS2 &
+
+
+# echo "Waiting... "
+# get_entrypoint_script_status() {
+#     return $(docker exec "ROS2-Base" cat /tmp/entrypoint_done)
+# }
+
+# while ! get_entrypoint_script_status; do
+#     sleep 5
+#     echo "Still waiting... "
+# done
+
+# echo "Build complete... "
+# sleep 1
+# docker exec ROS2-Base bash -c 'rm /tmp/entrypoint_done'
+
+
 
 # winpty docker exec -it ROS2 bash
