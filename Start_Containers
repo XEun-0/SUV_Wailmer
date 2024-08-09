@@ -1,11 +1,17 @@
 #!/bin/bash
 
-cd ROS2
+CONTAINER_DIRECTORY="Container"
+ROS2_DIRECTORY="${CONTAINER_DIRECTORY}/ROS2"
+ROS2_BASE_DIRECTORY="ROS2-Base"
+SSH_SERVER_DIRECTORY="SSH_Server"
+
+cd ${ROS2_DIRECTORY}
 docker build --network=host -f Dockerfile -t ros2 .
-cd ../
-cd ROS2-Base
+cd ../${ROS2_BASE_DIRECTORY}
 docker build --network=host -f Dockerfile -t ros2-base .
-cd ../
+cd ../${SSH_SERVER_DIRECTORY}
+docker build --network=host -f Dockerfile -t ssh-server .
+cd ../../
 
 docker compose up -d
 docker compose logs -f ROS2 &
