@@ -5,3 +5,9 @@ aliases:
 
 for arduino cli:
 	arduino-cli boards list
+	arduino-cli sketch new <Sketch Name>
+	arduino-cli compile --fqbn arduino:avr:nano <Sketch Name>
+		- the "sketch is apparently the folder that holds the ino files"
+	arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328old <Sketch Name>
+
+
