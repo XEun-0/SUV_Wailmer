@@ -1,20 +1,43 @@
 #!/bin/bash
 
-CONTAINER_DIRECTORY="Container"
-ROS2_DIRECTORY="${CONTAINER_DIRECTORY}/ROS2"
-ROS2_BASE_DIRECTORY="ROS2-Base"
-SSH_SERVER_DIRECTORY="SSH_Server"
+WORK_DIR=$(pwd)
 
-cd ${ROS2_DIRECTORY}
-docker build --network=host -f Dockerfile -t ros2 .
-cd ../${ROS2_BASE_DIRECTORY}
-docker build --network=host -f Dockerfile -t ros2-base .
-cd ../${SSH_SERVER_DIRECTORY}
-docker build --network=host -f Dockerfile -t ssh-server .
-cd ../../
+COMPOSE_OR_RUN=0
 
-docker compose up -d
-docker compose logs -f ROS2 &
+CONTAINER_DIRECTORY="${WORK_DIR}/Container"
+ROS2_TEST_DIRECTORY="${CONTAINER_DIRECTORY}/ROS2-Test"
+ROS2_BASE_DIRECTORY="${CONTAINER_DIRECTORY}/ROS2-Base"
+SSH_SERVER_DIRECTORY="${CONTAINER_DIRECTORY}/SSH_Server"
+
+echo ${WORK_DIR}
+echo ${CONTAINER_DIRECTORY}
+
+start_base() {
+    cd ${ROS2_BASE_DIRECTORY} && docker build --network=host -f Dockerfile -t ros2-base .
+}
+
+start_test() {
+    cd ${ROS2_TEST_DIRECTORY} && docker build --network=host -f Dockerfile -t ros2-test .
+    COMPOSE_OR_RUN=1
+}
+if [ $# -lt 1 ]; then
+    echo "Starting base ros2 image"
+    start_base
+else
+    echo "Starting base ros2 test image"
+    start_test
+fi
+
+cd ${SSH_SERVER_DIRECTORY} && docker build --network=host -f Dockerfile -t ssh-server .
+cd ${WORK_DIR}
+
+if [ "${COMPOSE_OR_RUN}" -eq 1 ]; then
+    winpty docker run -v "$(cygpath -w "$(pwd)"):/workspaces/ROS2-WS" -it ros2-test bash
+else
+    docker compose up -d
+    docker compose logs -f ROS2 &
+fi
+
 
 
 # echo "Waiting... "

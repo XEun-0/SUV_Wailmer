@@ -1,8 +1,8 @@
 services:
-  ROS2:
-    image: ros2
+  ROS2-Test:
+    image: ros2-test
     tty: true
-    container_name: ROS2
+    container_name: ROS2-Test
     volumes:
       - ./:/workspace/ROS2-SW
 

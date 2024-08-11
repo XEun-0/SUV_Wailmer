@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=arm64v8/ros
+ARG BASE_IMAGE=ros
 ARG ROS_DISTRO=iron
 
 # Use an appropriate base image
@@ -7,8 +7,8 @@ FROM ${BASE_IMAGE}:${ROS_DISTRO}
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY setup_ros2_base_suite.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
+# COPY setup_ros2_base_suite.sh /usr/local/bin/
+# RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
 
 # #install dependecies
 RUN apt-get update && apt-get install -y \
@@ -28,5 +28,5 @@ RUN apt-get update && apt-get install -y \
     && arduino-cli core install arduino:avr
 
 
-ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
+# ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]
