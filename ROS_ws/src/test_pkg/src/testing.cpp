@@ -59,10 +59,6 @@ int main(int argc, char * argv[])
     if (errorOpening!=1) return errorOpening;
     printf ("Successful connection to %s\n",SERIAL_PORT);
 
-    // If connection fails, return the error code otherwise, display a success message
-    if (errorOpening!=1) return errorOpening;
-    printf ("Successful connection to %s\n",SERIAL_PORT);
-
 
     // Create the string
     char buffer[15] = "hello\n";
