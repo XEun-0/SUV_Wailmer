@@ -12,6 +12,9 @@ for arduino cli:
 
 ros2:
 	ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_pubsub
+	rosdep install -i --from-path src --rosdistro iron -y
+	colcon build --packages-select test_pkg
+	ros2 run cpp_pubsub talker
 	
 
 

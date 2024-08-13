@@ -16,8 +16,10 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <unistd.h>
+#include <stdio.h>
 
-#include "../../Common/serialib.h"
+#include "serialib.h"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
@@ -50,8 +52,13 @@ private:
   size_t count_;
 };
 
+#if defined (__linux__) || defined(__APPLE__)
+    #define SERIAL_PORT "/dev/ttyUSB0"
+#endif
+
 int main(int argc, char * argv[])
 {
+    
     serialib serial;
     char errorOpening = serial.openDevice(SERIAL_PORT, 115200);
     
