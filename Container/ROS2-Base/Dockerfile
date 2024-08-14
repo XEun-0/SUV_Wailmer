@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY setup_ros2_base_suite.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
 
-# #install dependecies
+# Install dependecies
 RUN apt-get update && apt-get install -y \
     hostapd \
     dnsmasq \
@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     net-tools \
     wireless-tools \
     wget \
+    figlet \
     && wget https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_ARM64.tar.gz \
     && tar -xvzf arduino-cli_latest_Linux_ARM64.tar.gz \
     && mv arduino-cli /usr/local/bin/ \
