@@ -23,8 +23,8 @@ SUV - Small Underwater Vehicle. Codename WAILMER
 ---
 ## 2.5 TODO:
 - interface with Arduino Nano for sensor aggregation
-        - serial information
-        - ~~~be able to compile and upload sketch to arduino nano~~~
+   - [ ] serial information
+   - [x] ~~be able to compile and upload sketch to arduino nano~~
 
 ---
 ## 2.5 Setup VNC
