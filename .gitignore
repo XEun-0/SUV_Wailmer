@@ -1,6 +1,2 @@
 *.secrets
-build
-install
-log
-bin
-lib
+
