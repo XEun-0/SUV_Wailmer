@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo $0 $1
+#echo $0 $1
 
 rosdep install -i --from-path src --rosdistro iron -y
 
