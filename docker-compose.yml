@@ -14,3 +14,16 @@ services:
   #   tty: true
   #   container_name: MCU-Loader
   #   volumes:
+
+  jetson_ap:
+    build:
+      context: ./Container/SSH_Server
+    container_name: jetson_ap
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - ./Container/SSH_Server/conf/hostapd.conf:/etc/hostapd/hostapd.conf:rw
+      - ./Container/SSH_Server/conf/dnsmasq.conf:/etc/dnsmasq.conf:rw
+      - ./Container/SSH_Server/backup_restore.sh:/opt/backup_restore.sh:rw
+      - ./Container/SSH_Server/entrypoint.sh:/entrypoint.sh:rw
+    command: ["/entrypoint.sh"]

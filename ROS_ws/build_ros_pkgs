@@ -7,3 +7,7 @@ rosdep install -i --from-path src --rosdistro iron -y
 colcon build
 
 . install/setup.bash
+
+source ~/../opt/ros/iron/setup.bash
+
+#ros2 run test_pkg tester
