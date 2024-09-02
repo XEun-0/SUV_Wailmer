@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y \
     && arduino-cli config init \
     && arduino-cli core update-index \
     && arduino-cli core install arduino:avr \
+    && arduino-cli config set library.enable_unsafe_install true \
     && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]

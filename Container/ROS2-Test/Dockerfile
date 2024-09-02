@@ -12,6 +12,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependecies
 RUN apt-get update && apt-get install -y \
+    # Non-arm64
+    curl \
     hostapd \
     dnsmasq \
     iproute2 \
@@ -20,14 +22,13 @@ RUN apt-get update && apt-get install -y \
     wireless-tools \
     wget \
     figlet \
-    && wget https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_ARM64.tar.gz \
-    && tar -xvzf arduino-cli_latest_Linux_ARM64.tar.gz \
-    && mv arduino-cli /usr/local/bin/ \
-    && rm arduino-cli_latest_Linux_ARM64.tar.gz \
+    # Non-arm64
+    && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/local/bin sh
     && arduino-cli config init \
     && arduino-cli core update-index \
-    && arduino-cli core install arduino:avr
+    && arduino-cli core install arduino:avr \
+    && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 
-# ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
+ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]
