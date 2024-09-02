@@ -28,7 +28,7 @@ else
     start_test
 fi
 
-cd ${SSH_SERVER_DIRECTORY} && docker build --network=host -f Dockerfile -t ssh-server .
+#cd ${SSH_SERVER_DIRECTORY} && docker build --network=host -f Dockerfile -t ssh-server .
 cd ${WORK_DIR}
 
 if [ "${COMPOSE_OR_RUN}" -eq 1 ]; then
