@@ -28,6 +28,7 @@ using namespace std::chrono_literals;
 /* This example creates a subclass of Node and uses std::bind() to register a
  * member function as a callback from the timer. */
 
+byte sensorBuffer;
 class MinimalPublisher : public rclcpp::Node
 {
 public:
@@ -52,6 +53,9 @@ private:
   size_t count_;
 };
 
+#if defined (_WIN32) || defined(_WIN64)
+    #define SERIAL_PORT "\\\\.\\COM5"
+#endif
 #if defined (__linux__) || defined(__APPLE__)
   #define SERIAL_PORT "/dev/ttyUSB0"
 #endif
@@ -73,9 +77,13 @@ int main(int argc, char * argv[])
     serial.writeString(buffer);
     printf ("String sent: %s", buffer);
     usleep(1000000);
+    
     // Read the string
-    serial.readString(buffer, '\n', 14, 2000);
-    printf("String read: %s\n", buffer);
+    // serial.readString(buffer, '\n', 14, 2000);
+    // printf("String read: %s\n", buffer);
+
+    serial.readBytes(sensorBuffer*, 31, 2000);
+    printf("CTX: %x", )
 
     // Close the serial device
     //return 0 ;
