@@ -7,7 +7,6 @@ Adafruit_BNO055 bno = Adafruit_BNO055();
 MS5837 sensor;
 
 struct SensorInfo {
-  byte stx;
   float baroPressure;
   float baroTemp;
   float baroDepth;
@@ -17,8 +16,8 @@ struct SensorInfo {
   float imuOrientY;
   float imuOrientZ;
   int8_t imuTemp;
-  byte etx;
-}; // 4 x 7 + 2 + 1 = 31 bytes
+  int8_t padding1;
+}; // 4 x 7 + 1 + 1 = 32 bytes
 SensorInfo sensor_info;
 
 void setup() {
@@ -56,9 +55,6 @@ void loop() {
   sensor_info.imuOrientY = event.orientation.y;
   sensor_info.imuOrientZ = event.orientation.z;
   sensor_info.imuTemp = bno.getTemp();
-
-  sensor_info.stx = 0xAA;
-  sensor_info.etx = 0xBB;
 
 //  Serial.println(sensor_info.baroPressure);
 //  Serial.println(sizeof(sensor_info));
@@ -109,7 +105,7 @@ void loop() {
 //
 //  Serial.println("End =============================");
   Serial.write((byte *) &sensor_info, sizeof(SensorInfo));
-  delay(1000);
+  delay(500);
 }
 
 //Turns Barometer data collecting on

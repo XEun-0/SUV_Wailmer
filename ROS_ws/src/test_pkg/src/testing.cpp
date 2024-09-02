@@ -1,17 +1,3 @@
-// Copyright 2016 Open Source Robotics Foundation, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -27,8 +13,24 @@ using namespace std::chrono_literals;
 
 /* This example creates a subclass of Node and uses std::bind() to register a
  * member function as a callback from the timer. */
+#define SENSOR_BUFFER_SIZE      32
 
-byte sensorBuffer;
+struct SensorInfo {
+  float baroPressure;
+  float baroTemp;
+  float baroDepth;
+  float baroAltitude;
+
+  float imuOrientX;
+  float imuOrientY;
+  float imuOrientZ;
+  int8_t imuTemp;
+  int8_t padding1;
+}; // 4 x 7 + 1 + 1 = 32 bytes
+SensorInfo sensor_info;
+
+uint8_t sensorBuffer[SENSOR_BUFFER_SIZE];
+
 class MinimalPublisher : public rclcpp::Node
 {
 public:
@@ -74,19 +76,28 @@ int main(int argc, char * argv[])
     char buffer[15] = "hello\n";
 
     // Write the string on the serial device
-    serial.writeString(buffer);
-    printf ("String sent: %s", buffer);
-    usleep(1000000);
+    //serial.writeString(buffer);
+    //printf ("String sent: %s", buffer);
+    //usleep(1000000);
     
     // Read the string
     // serial.readString(buffer, '\n', 14, 2000);
     // printf("String read: %s\n", buffer);
 
-    serial.readBytes(sensorBuffer*, 31, 2000);
-    printf("CTX: %x", )
-
+    serial.readBytes(sensorBuffer, 32, 2000);
+    //printf("CTX: 0x%04X\n", sensorBuffer[0]);
+    for(int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
+    	printf("%02X", sensorBuffer[i]);
+    }
+    printf("\n");
+    
+    printf("%ld\n", sizeof(sensor_info));
+    
+    memcpy(&sensor_info, sensorBuffer, sizeof(SensorInfo));
+    printf("Testing: %f\n", sensor_info.imuOrientX);
     // Close the serial device
     //return 0 ;
+    usleep(500000);
   }
   serial.closeDevice();
 //   rclcpp::init(argc, argv);
