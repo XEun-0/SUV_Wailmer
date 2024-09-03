@@ -17,6 +17,7 @@ if ([string]::IsNullOrWhiteSpace($busId)) {
 # Attach the selected device
 Write-Output "Attaching device with bus ID $busId..."
 try {
+    & usbipd bind --busid 2-4
     & usbipd attach --wsl --busid=$busId
     Write-Output "Device attached successfully."
 } catch {
