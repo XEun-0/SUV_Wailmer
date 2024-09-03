@@ -7,9 +7,10 @@ FROM ${BASE_IMAGE}:${ROS_DISTRO}
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-# COPY setup_ros2_base_suite.sh /usr/local/bin/
-# RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
+COPY setup_ros2_base_suite.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
 
+RUN ls
 # Install dependecies
 RUN apt-get update && apt-get install -y \
     # Non-arm64
@@ -23,10 +24,11 @@ RUN apt-get update && apt-get install -y \
     wget \
     figlet \
     # Non-arm64
-    && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/local/bin sh
+    && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
     && arduino-cli config init \
     && arduino-cli core update-index \
     && arduino-cli core install arduino:avr \
+    && arduino-cli config set library.enable_unsafe_install true \
     && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 

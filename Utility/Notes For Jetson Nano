@@ -17,5 +17,15 @@ ros2:
         . install/setup.bash
 	ros2 run test_pkg tester
 	
+Windows:
+	In WSL2, cd mnt/c/ or mnt/<DRIVE LETTER>
+	In my case, I have it in my O: drive so cd /mnt/o/Workspace/SUV_Wailmer
+	to get to my directory for my repo.
 
 
+Line-ending issues:
+	sed -i 's/\r$//' <SCRIPT_NAME>
+
+
+/workspaces/ROS2-SW/ROS_ws/build/test_pkg/CMakeCache.txt
+/workspaces/ROS2-WS/ROS_ws/build/test_pkg
