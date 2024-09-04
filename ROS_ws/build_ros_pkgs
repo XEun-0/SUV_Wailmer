@@ -2,12 +2,9 @@
 
 #echo $0 $1
 
-rosdep install -i --from-path src --rosdistro iron -y
+#rosdep install -i --from-path src --rosdistro iron -y
 
-colcon build
-
+colcon build --packages-select test_pkg
 . install/setup.bash
-
-source ~/../opt/ros/iron/setup.bash
-
 #ros2 run test_pkg tester
+
