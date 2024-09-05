@@ -1,5 +1,8 @@
 services: 
   ROS2-Base:
+    build:
+      context: ./Container/ROS2-Base
+      dockerfile: Dockerfile
     image: ros2-base
     tty: true
     container_name: ROS2-Base
