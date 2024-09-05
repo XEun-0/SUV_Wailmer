@@ -11,7 +11,6 @@ ENV SETUP_SCRIPT="setup_ros2_test_suite.sh"
 COPY ${SETUP_SCRIPT} /usr/local/bin/
 RUN chmod +x /usr/local/bin/${SETUP_SCRIPT}
 
-RUN ls
 # Install dependecies
 RUN apt-get update && apt-get install -y \
     # Non-arm64

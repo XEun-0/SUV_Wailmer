@@ -9,7 +9,7 @@ services:
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
-      - ./:/workspace/ROS2-SW
+      - ./:/workspaces/ROS2-SW
       - /tmp/.X11-unix:/tmp/.X11-unix:rw"
 
   # jetson_ap:
