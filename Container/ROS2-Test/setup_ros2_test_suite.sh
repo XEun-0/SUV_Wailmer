@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SUV_NAME=SUV_WAILMER
-WORK_DIR=workspaces/ROS2-WS/
+WORK_DIR=workspaces/ROS2-SW/
 ARD_LIB_DIR=Devices/Arduino/Libraries/
 ROS_WS_DIR=ROS_ws/
 
