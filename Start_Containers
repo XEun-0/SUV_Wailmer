@@ -29,13 +29,23 @@ echo ${CONTAINER_DIRECTORY}
 #fi
 
 #cd ${SSH_SERVER_DIRECTORY} && docker build --network=host -f Dockerfile -t ssh-server .
-cd ${WORK_DIR}
+#cd ${WORK_DIR}
 
 #if [ "${COMPOSE_OR_RUN}" -eq 1 ]; then
 #    winpty docker run -v "$(cygpath -w "$(pwd)"):/workspaces/ROS2-WS" -it ros2-test bash
 #else
-    docker compose up -d
+docker compose up -d
+if [ $? -eq 0 ]; then
+    echo "Docker Compose started successfully. Following logs..."
+    # Run Docker Compose logs in the background
     docker compose logs -f ROS2-Base &
+    # Optionally capture the PID of the background process
+    LOGS_PID=$!
+    echo "Docker Compose logs following process started with PID: ${LOGS_PID}"
+else
+    echo "Docker Compose failed to start. Check the logs for errors."
+    exit 1
+fi
 #fi
 
 
