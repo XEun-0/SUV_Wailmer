@@ -6,6 +6,7 @@
 Adafruit_BNO055 bno = Adafruit_BNO055();
 MS5837 sensor;
 
+#define SERIAL_DEBUG true
 struct SensorInfo {
   float baroPressure;
   float baroTemp;
@@ -16,18 +17,20 @@ struct SensorInfo {
   float imuOrientY;
   float imuOrientZ;
   int8_t imuTemp;
-  int8_t padding1;
-}; // 4 x 7 + 1 + 1 = 32 bytes
+  uint8_t padding1;
+  uint8_t padding2;     
+  uint8_t padding3;    
+}; // 4 x 7 + 1 + 1 + 1 + 1 = 32 bytes
 SensorInfo sensor_info;
 
 void setup() {
   
-  Serial.begin(9600);
-  
-  Serial.println("Starting");
-  Serial.println(F("\nI2C PINS"));
-  Serial.print(F("\tSDA = ")); Serial.println(SDA);
-  Serial.print(F("\tSCL = ")); Serial.println(SCL);
+ Serial.begin(9600);
+//  
+//  Serial.println("Starting");
+//  Serial.println(F("\nI2C PINS"));
+//  Serial.print(F("\tSDA = ")); Serial.println(SDA);
+//  Serial.print(F("\tSCL = ")); Serial.println(SCL);
 
   InitializeBarometer();
   InitializeIMU();
@@ -38,6 +41,8 @@ void setup() {
 }
 
 void loop() {
+  
+  
   // Update pressure and temperature readings
   sensor.read();
   
@@ -56,6 +61,14 @@ void loop() {
   sensor_info.imuOrientZ = event.orientation.z;
   sensor_info.imuTemp = bno.getTemp();
 
+  if SERIAL_DEBUG {
+    
+  }
+
+
+
+//  Serial.print("sizeof(SensorInfo)");
+//  Serial.println(sizeof(SensorInfo));
 //  Serial.println(sensor_info.baroPressure);
 //  Serial.println(sizeof(sensor_info));
   
@@ -104,7 +117,7 @@ void loop() {
 //  Serial.println("");
 //
 //  Serial.println("End =============================");
-  Serial.write((byte *) &sensor_info, sizeof(SensorInfo));
+  Serial.write((uint8_t *) &sensor_info, sizeof(SensorInfo));
   delay(500);
 }
 

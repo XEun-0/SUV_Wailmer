@@ -86,6 +86,7 @@ int main(int argc, char * argv[])
 
     serial.readBytes(sensorBuffer, 32, 2000);
     //printf("CTX: 0x%04X\n", sensorBuffer[0]);
+    memcpy(&sensor_info, sensorBuffer, sizeof(SensorInfo));
     for(int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
     	printf("%02X", sensorBuffer[i]);
     }
@@ -93,7 +94,6 @@ int main(int argc, char * argv[])
     
     printf("%ld\n", sizeof(sensor_info));
     
-    memcpy(&sensor_info, sensorBuffer, sizeof(SensorInfo));
     printf("Testing: %f\n", sensor_info.imuOrientX);
     // Close the serial device
     //return 0 ;

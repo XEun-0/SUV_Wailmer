@@ -3,6 +3,7 @@
 docker build -t ros2-test -f Dockerfile .
 
 docker run -it --name ROS2-Test \
+  --device /dev/ttyUSB0:/dev/ttyUSB0 \
   -v $(pwd)/../../:/workspaces/ROS2-WS \
   ros2-test
 
