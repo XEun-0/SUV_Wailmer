@@ -38,7 +38,7 @@ docker compose up -d
 if [ $? -eq 0 ]; then
     echo "Docker Compose started successfully. Following logs..."
     # Run Docker Compose logs in the background
-    docker compose logs -f ROS2-Base &
+    docker compose logs -f ROS2-Base
     # Optionally capture the PID of the background process
     LOGS_PID=$!
     echo "Docker Compose logs following process started with PID: ${LOGS_PID}"
