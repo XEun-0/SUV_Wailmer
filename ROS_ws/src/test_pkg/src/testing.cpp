@@ -62,10 +62,12 @@ private:
   #define SERIAL_PORT "/dev/ttyACM0"
 #endif
 
+#define BAUD_RATE 115200
+
 int main(int argc, char * argv[])
 {
   serialib serial;
-  char errorOpening = serial.openDevice(SERIAL_PORT, 9600);
+  char errorOpening = serial.openDevice(SERIAL_PORT, BAUD_RATE);
     
   // If connection fails, return the error code otherwise, display a success message
   if (errorOpening!=1) return errorOpening;
@@ -75,26 +77,26 @@ int main(int argc, char * argv[])
     // Create the string
     char buffer[15] = "hello\n";
 
-    // Write the string on the serial device
-    //serial.writeString(buffer);
-    //printf ("String sent: %s", buffer);
-    //usleep(1000000);
+    //Write the string on the serial device
+    serial.writeString(buffer);
+    printf ("String sent: %s", buffer);
+    usleep(1000000);
     
-    // Read the string
-    // serial.readString(buffer, '\n', 14, 2000);
-    // printf("String read: %s\n", buffer);
+    //Read the string
+    serial.readString(buffer, '\n', 14, 2000);
+    printf("String read: %s\n", buffer);
 
-    serial.readBytes(sensorBuffer, 32, 2000);
-    //printf("CTX: 0x%04X\n", sensorBuffer[0]);
-    memcpy(&sensor_info, sensorBuffer, sizeof(SensorInfo));
-    for(int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
-    	printf("%02X", sensorBuffer[i]);
-    }
-    printf("\n");
+    // serial.readBytes(sensorBuffer, 32, 2000);
+    // //printf("CTX: 0x%04X\n", sensorBuffer[0]);
+    // memcpy(&sensor_info, sensorBuffer, sizeof(SensorInfo));
+    // for(int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
+    // 	printf("%02X", sensorBuffer[i]);
+    // }
+    // printf("\n");
     
     printf("%ld\n", sizeof(sensor_info));
     
-    printf("Testing: %f\n", sensor_info.imuOrientX);
+    // printf("Testing: %f\n", sensor_info.imuOrientX);
     // Close the serial device
     //return 0 ;
     usleep(500000);
