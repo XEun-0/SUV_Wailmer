@@ -59,7 +59,7 @@ private:
     #define SERIAL_PORT "\\\\.\\COM5"
 #endif
 #if defined (__linux__) || defined(__APPLE__)
-  #define SERIAL_PORT "/dev/ttyUSB0"
+  #define SERIAL_PORT "/dev/ttyACM0"
 #endif
 
 int main(int argc, char * argv[])

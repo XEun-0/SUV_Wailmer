@@ -9,13 +9,19 @@
 // Platform/Device: Arduino                                                 //
 //////////////////////////////////////////////////////////////////////////////
 
+// Define the LED pin
+#define LED 13
+
+// The setup function runs once when you press reset or power the board
 void setup() {
-  Serial.begin(9600);
-  
-  pinMode(LED_BUILTIN, OUTPUT);
+  // Initialize digital pin LED as an output
+  pinMode(LED, OUTPUT);
 }
 
+// The loop function runs over and over again forever
 void loop() {
-  if (Serial.available())
-    Serial.write( toupper (Serial.read()) );
+  digitalWrite(LED, HIGH); // Turn the LED on (HIGH is the voltage level)
+  delay(1000);             // Wait for a second
+  digitalWrite(LED, LOW);  // Turn the LED off by making the voltage LOW
+  delay(1000);             // Wait for a second
 }
