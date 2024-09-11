@@ -13,6 +13,8 @@ services:
     volumes:
       - ./:/workspaces/ROS2-SW
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    ports:
+      - "5000:5000"
 
   #  /dev/ttyUSB0:/dev/ttyUSB0
   # jetson_ap:
@@ -27,3 +29,7 @@ services:
   #     - ./Container/SSH_Server/backup_restore.sh:/opt/backup_restore.sh:rw
   #     - ./Container/SSH_Server/entrypoint.sh:/entrypoint.sh:rw
   #   command: ["/entrypoint.sh"]
+
+  # networks:
+  #   SUV_Network:
+  #     driver: bridge

@@ -20,10 +20,14 @@ RUN apt-get update && apt-get install -y \
     net-tools \
     wireless-tools \
     python3-opencv \
-    libopencv-dev \   
+    libopencv-dev \
+    python3-pip \
+    python3-tk \
+    tk \   
     wget \
     figlet \
     && rm -rf /var/lib/apt/lists/* \
+    && pip3 install Pillow Flask \
     && wget https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_ARM64.tar.gz \
     && tar -xvzf arduino-cli_latest_Linux_ARM64.tar.gz \
     && mv arduino-cli /usr/local/bin/ \
