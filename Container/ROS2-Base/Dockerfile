@@ -6,9 +6,10 @@ FROM ${BASE_IMAGE}:${ROS_DISTRO}
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV SETUP_SCRIPT="setup_ros2_base_suite.sh"
 
-COPY setup_ros2_base_suite.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/setup_ros2_base_suite.sh
+COPY ${SETUP_SCRIPT} /usr/local/bin/
+RUN chmod +x /usr/local/bin/${SETUP_SCRIPT}
 
 # Install dependecies
 RUN apt-get update && apt-get install -y \
@@ -27,9 +28,8 @@ RUN apt-get update && apt-get install -y \
     && arduino-cli config init \
     && arduino-cli core update-index \
     && arduino-cli core install arduino:avr \
-    && bash -c "source /opt/ros/iron/setup.bash"
-#    && source opt/ros/iron/setup.bash
-
+    && arduino-cli config set library.enable_unsafe_install true \
+    && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]

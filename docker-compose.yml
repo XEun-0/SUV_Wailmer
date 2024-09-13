@@ -1,29 +1,26 @@
 services: 
   ROS2-Base:
+    build:
+      context: ./Container/ROS2-Base
+      dockerfile: Dockerfile
     image: ros2-base
     tty: true
     container_name: ROS2-Base
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
-      - ./:/workspace/ROS2-SW
+      - ./:/workspaces/ROS2-SW
       - /tmp/.X11-unix:/tmp/.X11-unix:rw"
-  
-  # MCU-Loader:
-  #   image:
-  #   tty: true
-  #   container_name: MCU-Loader
-  #   volumes:
 
-  jetson_ap:
-    build:
-      context: ./Container/SSH_Server
-    container_name: jetson_ap
-    network_mode: "host"
-    privileged: true
-    volumes:
-      - ./Container/SSH_Server/conf/hostapd.conf:/etc/hostapd/hostapd.conf:rw
-      - ./Container/SSH_Server/conf/dnsmasq.conf:/etc/dnsmasq.conf:rw
-      - ./Container/SSH_Server/backup_restore.sh:/opt/backup_restore.sh:rw
-      - ./Container/SSH_Server/entrypoint.sh:/entrypoint.sh:rw
-    command: ["/entrypoint.sh"]
+  # jetson_ap:
+  #   build:
+  #     context: ./Container/SSH_Server
+  #   container_name: jetson_ap
+  #   network_mode: "host"
+  #   privileged: true
+  #   volumes:
+  #     - ./Container/SSH_Server/conf/hostapd.conf:/etc/hostapd/hostapd.conf:rw
+  #     - ./Container/SSH_Server/conf/dnsmasq.conf:/etc/dnsmasq.conf:rw
+  #     - ./Container/SSH_Server/backup_restore.sh:/opt/backup_restore.sh:rw
+  #     - ./Container/SSH_Server/entrypoint.sh:/entrypoint.sh:rw
+  #   command: ["/entrypoint.sh"]
