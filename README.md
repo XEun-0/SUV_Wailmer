@@ -28,7 +28,7 @@ SUV - Small Underwater Vehicle. Codename WAILMER
                     \\// (6)
 
 (2) Sensors: Camera, IMU, Temperature sensor
-(3) Mother Board - Jetson Nano (run the overall program)  
+(3) Mother Board - Jetson Nano (run the overall program) or Raspberry Pi 5 
 (4) Microcontroller - Arduino Mega (for thruster command execution), Arduno Nano (IMU, Barometer, Temperature aggregation)
 
 ---
