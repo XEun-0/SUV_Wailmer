@@ -4,16 +4,9 @@ ARG ROS_DISTRO=iron
 # Use an appropriate base image
 FROM ${BASE_IMAGE}:${ROS_DISTRO}
 
-# USER root
-
-# ARG USERNAME=dev
-# ARG USER_UID=1000
-# ARG USER_GID=$USER_UID
-
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SETUP_SCRIPT="setup_ros2_base_suite.sh"
-ENV WS_PATH="/workspaces/ROS2-SW"
 
 COPY ${SETUP_SCRIPT} /usr/local/bin/
 RUN chmod +x /usr/local/bin/${SETUP_SCRIPT}
@@ -44,18 +37,6 @@ RUN apt-get update && apt-get install -y \
     && arduino-cli core install arduino:avr \
     && arduino-cli config set library.enable_unsafe_install true \
     && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
-
-# RUN echo $USERNAME \
-#     echo $USER_UID \
-#     echo $USER_GID
-
-# RUN groupadd --gid $USER_GID $USERNAME \
-#     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-#     && apt-get -y install sudo \
-#     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-#     && chmod 0440 /etc/sudoers.d/$USERNAMES
-
-USER $USERNAME
 
 ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]

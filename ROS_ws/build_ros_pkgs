@@ -4,7 +4,7 @@
 
 #rosdep install -i --from-path src --rosdistro iron -y
 
-colcon build --packages-select test_pkg operations optics
+colcon build --packages-select test_pkg
 . install/setup.bash
 #ros2 run test_pkg tester
 
