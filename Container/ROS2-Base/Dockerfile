@@ -39,10 +39,6 @@ RUN apt-get update && apt-get install -y \
     && tar -xvzf arduino-cli_latest_Linux_ARM64.tar.gz \
     && mv arduino-cli /usr/local/bin/ \
     && rm arduino-cli_latest_Linux_ARM64.tar.gz \
-    && arduino-cli config init \
-    && arduino-cli core update-index \
-    && arduino-cli core install arduino:avr \
-    && arduino-cli config set library.enable_unsafe_install true \
     && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 RUN echo $USERNAME \
@@ -56,6 +52,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAMES
 
 USER $USERNAME
+
+RUN arduino-cli config init \
+    && arduino-cli core update-index \
+    && arduino-cli core install arduino:avr \
+    && arduino-cli config set library.enable_unsafe_install true
 
 ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]

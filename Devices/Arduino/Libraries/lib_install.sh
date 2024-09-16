@@ -11,7 +11,6 @@
 # arduino-cli config dump
 # arduino-cli lib list
 
-arduino-cli config set library.enable_unsafe_install true
 # Install the library
 arduino-cli lib install --zip-path Adafruit_Unified_Sensor-1.1.14.zip
 arduino-cli lib install --zip-path Adafruit_BNO055-1.6.3.zip

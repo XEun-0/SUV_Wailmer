@@ -9,6 +9,9 @@ for arduino cli:
 	arduino-cli compile --fqbn arduino:avr:nano <Sketch Name>
 		- the "sketch is apparently the folder that holds the ino files"
 	arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328old <Sketch Name>
+	
+	/dev/ttyACM0 serial   Serial Port (USB) Arduino Mega or Mega 2560 arduino:avr:mega arduino:avr
+	arduino-cli compile --fqbn arduino:avr:mega Sensors
 
 ros2:
 	ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_pubsub
