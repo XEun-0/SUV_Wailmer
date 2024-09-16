@@ -35,7 +35,7 @@ echo ${CONTAINER_DIRECTORY}
 #    winpty docker run -v "$(cygpath -w "$(pwd)"):/workspaces/ROS2-WS" -it ros2-test bash
 #else
 docker compose up -d
-# docker compose logs -f ROS2-Base
+docker compose logs -f ROS2-Base &
 #fi
 
 

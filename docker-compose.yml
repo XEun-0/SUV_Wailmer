@@ -3,6 +3,10 @@ services:
     build:
       context: ./Container/ROS2-Base
       dockerfile: Dockerfile
+      args:
+        USERNAME: ${USER:-dev}
+        USER_UID: ${CU_UID}
+        USER_GID: ${CU_GID}
     image: ros2-base
     env_file: ".env"
     tty: true
