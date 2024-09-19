@@ -6,7 +6,7 @@
 Adafruit_BNO055 bno = Adafruit_BNO055();
 MS5837 sensor;
 
-#define SERIAL_DEBUG true
+// #define SERIAL_DEBUG true
 struct SensorInfo {
   float baroPressure;
   float baroTemp;
@@ -61,9 +61,9 @@ void loop() {
   sensor_info.imuOrientZ = event.orientation.z;
   sensor_info.imuTemp = bno.getTemp();
 
-  if SERIAL_DEBUG {
-    
-  }
+//   if SERIAL_DEBUG {
+//
+//   }
 
 
 
