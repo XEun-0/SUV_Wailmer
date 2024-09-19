@@ -4,7 +4,7 @@ ARG ROS_DISTRO=iron
 # Use an appropriate base image
 FROM ${BASE_IMAGE}:${ROS_DISTRO}
 
-# USER root
+USER root
 
 ARG USERNAME=dev
 ARG USER_UID=1000
@@ -29,7 +29,9 @@ RUN apt-get update && apt-get install -y \
     python3-opencv \
     libopencv-dev \
     python3-pip \
+    python3-venv \
     python3-tk \
+    curl \
     tk \   
     wget \
     figlet \
@@ -39,24 +41,22 @@ RUN apt-get update && apt-get install -y \
     && tar -xvzf arduino-cli_latest_Linux_ARM64.tar.gz \
     && mv arduino-cli /usr/local/bin/ \
     && rm arduino-cli_latest_Linux_ARM64.tar.gz \
-    && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
-
-RUN echo $USERNAME \
-    echo $USER_UID \
-    echo $USER_GID
+    && curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py \
+    && python3 get-platformio.py
 
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get -y install sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAMES
+    && chmod 0440 /etc/sudoers.d/$USERNAME
 
 USER $USERNAME
 
 RUN arduino-cli config init \
     && arduino-cli core update-index \
     && arduino-cli core install arduino:avr \
-    && arduino-cli config set library.enable_unsafe_install true
+    && arduino-cli config set library.enable_unsafe_install true \
+    && echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc
 
 ENTRYPOINT [ "/usr/local/bin/setup_ros2_base_suite.sh" ]
 CMD [ "/bin/bash" ]
