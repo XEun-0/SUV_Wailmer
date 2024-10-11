@@ -4,7 +4,7 @@ aliases:
 	rnbash
 
 for arduino cli:
-	arduino-cli boards list
+	arduino-cli board list
 	arduino-cli sketch new <Sketch Name>
 	arduino-cli compile --fqbn arduino:avr:nano <Sketch Name>
 		- the "sketch is apparently the folder that holds the ino files"
