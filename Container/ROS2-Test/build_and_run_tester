@@ -1,12 +1,18 @@
 #!/bin/bash
 
-docker build -t ros2-test -f Dockerfile .
+docker build --no-cache -t ros2-test -f Dockerfile \
+  --build-arg USER_UID=${CU_UID} \
+  --build-arg USER_GID=${CU_GID} .
 
-docker run -it --name ROS2-Test \
-  --device /dev/ttyUSB0:/dev/ttyUSB0 \
+docker run -it -d --name ROS2-Test \
+  --device /dev/ttyACM0:/dev/ttyACM0 \
+  -e DISPLAY=$DISPLAY \
   -v $(pwd)/../../:/workspaces/ROS2-SW \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   ros2-test
+  
 
+docker logs -f ROS2-Test &
 # docker run -it --name ROS2-Test \
 #   --device /dev/ttyUSB0:/dev/ttyUSB0 \
 #   -v $(pwd)/../../:/workspaces/ROS2-WS \
