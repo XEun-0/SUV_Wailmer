@@ -55,7 +55,7 @@ void loop() {
   // Update pressure and temperature readings
   sensor.read();
   
-// IMU get new sensor event
+  // IMU get new sensor event
   sensors_event_t event; 
   bno.getEvent(&event);
 

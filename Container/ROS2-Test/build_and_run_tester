@@ -1,9 +1,18 @@
 #!/bin/bash
 
-docker build --no-cache -t ros2-test -f Dockerfile \
-  --build-arg USER_UID=${CU_UID} \
-  --build-arg USER_GID=${CU_GID} .
+# Get host uid and gid
+_UID=$(id -u)
+_GID=$(id -g) 
 
+# Build ROS2-Test container
+docker build --no-cache -t ros2-test -f Dockerfile \
+  --build-arg USER_UID=${_UID} \
+  --build-arg USER_GID=${_GID} .
+
+# Run ROS2-Test container with appropiate parameters
+# NOTE: Run may succeed but the entrypoint script in the
+# dockerfile may fail due to perms. Delete build,logs,install
+# folders inside ROS_ws/
 docker run -it -d --name ROS2-Test \
   --device /dev/ttyACM0:/dev/ttyACM0 \
   -e DISPLAY=$DISPLAY \
@@ -11,10 +20,6 @@ docker run -it -d --name ROS2-Test \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   ros2-test
   
-
+# Tail entrypoint script running and detached bash process.
 docker logs -f ROS2-Test &
-# docker run -it --name ROS2-Test \
-#   --device /dev/ttyUSB0:/dev/ttyUSB0 \
-#   -v $(pwd)/../../:/workspaces/ROS2-WS \
-#   ros2-test
 
