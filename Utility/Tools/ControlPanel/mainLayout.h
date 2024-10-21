@@ -13,6 +13,13 @@
 namespace Ui {
   class MainLayout;
 }
+
+enum Label_Type {
+  SENSOR_FIELDS, 
+  MOTOR_SPEED, 
+  LABEL_GO, 
+  LABEL_NOGO
+};
  
 class MainLayout : public QGridLayout
 {
@@ -37,6 +44,7 @@ private:
   QLabel *imuTemp_Label;
 
   QLabel *currentMotorSpeed_Label;
+  QLabel *sensorSerialConf_Label;
   
   // Buttons
   QPushButton *startTxRx_Button;
@@ -53,7 +61,7 @@ private:
   // Member functions
   void initializeUI();
   void buttonSetup();
-  void updateLabel();
+  void updateLabel(Label_Type label_type);
   int16_t calculateChecksum(uint8_t *data, size_t length);
 
   uint8_t bytesAvailable;

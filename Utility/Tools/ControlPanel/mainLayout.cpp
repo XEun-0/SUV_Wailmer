@@ -34,6 +34,7 @@ enum Progress_State {
 
 Progress_State recvProg = NOGO;
 Progress_State currProg = NOGO;
+Label_Type curr_label_type = SENSOR_FIELDS;
 
 struct SensorInfo {
   float baroPressure;  // Changed from float to float
@@ -74,6 +75,10 @@ void MainLayout::initializeUI() {
   imuTemp_Label =       new QLabel("imuTemp: ");
 
   currentMotorSpeed_Label = new QLabel("Motor Speed: ");
+  sensorSerialConf_Label = new QLabel("Sensor Serial Status: NOGO");
+  QGridLayout *statusDisplayLayout = new QGridLayout();
+  statusDisplayLayout->addWidget(currentMotorSpeed_Label, 0, 0, 1, 1);
+  statusDisplayLayout->addWidget(sensorSerialConf_Label, 1, 0, 1, 1);
 
   QGridLayout *displayLayout = new QGridLayout();
   // Barometer Sensor Labels
@@ -140,7 +145,8 @@ void MainLayout::initializeUI() {
   this->addLayout(displayLayout,0,0,1,1);
   this->addLayout(TxRxButtonLayout, 3, 0, 1, 1);
   this->addLayout(MovementControls, 3, 3, 1, 1);
-  this->addWidget(currentMotorSpeed_Label, 0, 3, 1, 1);
+  //this->addWidget(currentMotorSpeed_Label, 0, 3, 1, 1);
+  this->addLayout(statusDisplayLayout, 0, 3, 1, 1);
 
   // Connect button signal to appropriate slot
   connect(startTxRx_Button, &QPushButton::released, this, &MainLayout::startTimer);
@@ -148,7 +154,7 @@ void MainLayout::initializeUI() {
   connect(timer, &QTimer::timeout, this, &MainLayout::txRxFromSerial);
   stopTxRx_Button->setEnabled(false);
 
-  updateLabel();
+  updateLabel(SENSOR_FIELDS);
 }
 
 void MainLayout::startTimer()
@@ -176,6 +182,7 @@ void MainLayout::stopTimer()
   stopTxRx_Button->setEnabled(false);
   serial.closeDevice();
   currProg = NOGO;
+  updateLabel(LABEL_NOGO);
 }
 
 // Function called by the timer every second
@@ -253,6 +260,7 @@ void MainLayout::txRxFromSerial()
     return;
   } else {
     currProg = GO;
+    updateLabel(LABEL_GO);
   }
   
   serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
@@ -270,7 +278,7 @@ void MainLayout::txRxFromSerial()
   // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
 
   memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
-  updateLabel();
+  updateLabel(SENSOR_FIELDS);
   //}
 #else
   //serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
@@ -307,16 +315,37 @@ int16_t MainLayout::calculateChecksum(uint8_t *data, size_t length) {
   return sum;
 }
 
-void MainLayout::updateLabel() {
-  // Barometer
-  baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(sensor_info.baroPressure, 0, 'f', 2));
-  baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(sensor_info.baroTemp, 0, 'f', 2));
-  baroDepth_Label->setText(QString("Barometer Depth: %1").arg(sensor_info.baroDepth, 0, 'f', 2));
-  baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(sensor_info.baroAltitude, 0, 'f', 2));
+void MainLayout::updateLabel(Label_Type label_type) {
+  // enum Label_Type {
+  //   SENSOR_FIELDS, 
+  //   MOTOR_SPEED, 
+  //   LABEL_GO, 
+  //   LABEL_NOGO
+  // };
   
-  // IMU
-  imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(sensor_info.imuOrientX, 0, 'f', 2));
-  imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(sensor_info.imuOrientY, 0, 'f', 2));
-  imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(sensor_info.imuOrientZ, 0, 'f', 2));
-  imuTemp_Label->setText(QString("IMU Temperature: %1").arg(sensor_info.imuTemp));
+  switch(label_type) {
+    case SENSOR_FIELDS:
+      // Barometer
+      baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(sensor_info.baroPressure, 0, 'f', 2));
+      baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(sensor_info.baroTemp, 0, 'f', 2));
+      baroDepth_Label->setText(QString("Barometer Depth: %1").arg(sensor_info.baroDepth, 0, 'f', 2));
+      baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(sensor_info.baroAltitude, 0, 'f', 2));
+      
+      // IMU
+      imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(sensor_info.imuOrientX, 0, 'f', 2));
+      imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(sensor_info.imuOrientY, 0, 'f', 2));
+      imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(sensor_info.imuOrientZ, 0, 'f', 2));
+      imuTemp_Label->setText(QString("IMU Temperature: %1").arg(sensor_info.imuTemp));
+      break;
+    case MOTOR_SPEED:
+      break;
+    case LABEL_GO:
+      //"Sensor Serial Status: "
+      sensorSerialConf_Label->setText(QString("Sensor Serial Status: GO"));
+      break;
+    case LABEL_NOGO:
+      sensorSerialConf_Label->setText(QString("Sensor Serial Status: NOGO"));
+      break;
+  }
+  
 }
