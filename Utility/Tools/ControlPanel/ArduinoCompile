@@ -1,0 +1,2 @@
+#!/bin/bash
+arduino-cli compile --fqbn arduino:avr:mega ../../../Devices/Arduino/Serial_Test
