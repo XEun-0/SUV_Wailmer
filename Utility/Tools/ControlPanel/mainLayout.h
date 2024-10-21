@@ -35,6 +35,8 @@ private:
   QLabel *imuOrientY_Label;
   QLabel *imuOrientZ_Label;
   QLabel *imuTemp_Label;
+
+  QLabel *currentMotorSpeed_Label;
   
   // Buttons
   QPushButton *startTxRx_Button;
@@ -50,6 +52,7 @@ private:
 
   // Member functions
   void initializeUI();
+  void buttonSetup();
   void updateLabel();
   int16_t calculateChecksum(uint8_t *data, size_t length);
 

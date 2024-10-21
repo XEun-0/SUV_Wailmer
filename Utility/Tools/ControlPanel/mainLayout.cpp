@@ -58,6 +58,7 @@ MainLayout::MainLayout(QWidget *parent)
   this->initializeUI();
   memset(outBuffer, 0, SENSOR_BUFFER_SIZE);
   memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
+  memset(&sensor_info, 0, SENSOR_BUFFER_SIZE);
 }
 
 void MainLayout::initializeUI() {
@@ -71,6 +72,8 @@ void MainLayout::initializeUI() {
   imuOrientY_Label =    new QLabel("imuOrientY: ");
   imuOrientZ_Label =    new QLabel("imuOrientZ: ");
   imuTemp_Label =       new QLabel("imuTemp: ");
+
+  currentMotorSpeed_Label = new QLabel("Motor Speed: ");
 
   QGridLayout *displayLayout = new QGridLayout();
   // Barometer Sensor Labels
@@ -90,23 +93,36 @@ void MainLayout::initializeUI() {
   // Create the button, make "this" the parent
   startTxRx_Button = new QPushButton("Start Tx/Rx");
   // set size and location of the button
-  startTxRx_Button->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
-  startTxRx_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  startTxRx_Button->setFixedSize(QSize(100, 30));
+  //startTxRx_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   
   stopTxRx_Button = new QPushButton("Stop Tx/Rx");
-  stopTxRx_Button->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
-  stopTxRx_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  stopTxRx_Button->setFixedSize(QSize(100, 30));
+  //stopTxRx_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   
   TxRxButtonLayout->addWidget(startTxRx_Button, 0, 0, 1, 1);
   TxRxButtonLayout->addWidget(stopTxRx_Button, 1, 0, 1, 1);
   
   // Initialize Buttons
   verticalUp_Button = new QPushButton("UP");
+  verticalUp_Button->setFixedSize(QSize(75, 75));
+  //verticalUp_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
   verticalDown_Button = new QPushButton("DOWN");
+  verticalDown_Button->setFixedSize(QSize(75, 75));
+  
   forward_Button = new QPushButton("Fwd");
+  forward_Button->setFixedSize(QSize(75, 75));
+  
   backward_Button = new QPushButton("Bwd");
+  backward_Button->setFixedSize(QSize(75, 75));
+  
   turnRight_Button = new QPushButton("Trn ->");
+  turnRight_Button->setFixedSize(QSize(75, 75));
+  
   turnLeft_Button = new QPushButton("<- Trn");
+  turnLeft_Button->setFixedSize(QSize(75, 75));
+
   QGridLayout *MovementControls = new QGridLayout();
   // 00 01 02
   // 10 11 12
@@ -118,18 +134,21 @@ void MainLayout::initializeUI() {
   MovementControls->addWidget(backward_Button, 2, 1, 1, 1);
   MovementControls->addWidget(turnRight_Button, 1, 2, 1, 1);
   MovementControls->addWidget(turnLeft_Button, 1, 0, 1, 1);
-  QSpacerItem *verticalSpacer = new QSpacerItem(100, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  QSpacerItem *verticalSpacer = new QSpacerItem(200, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
   this->addItem(verticalSpacer, 3, 2, 1, 1);
   
   this->addLayout(displayLayout,0,0,1,1);
   this->addLayout(TxRxButtonLayout, 3, 0, 1, 1);
   this->addLayout(MovementControls, 3, 3, 1, 1);
+  this->addWidget(currentMotorSpeed_Label, 0, 3, 1, 1);
 
   // Connect button signal to appropriate slot
   connect(startTxRx_Button, &QPushButton::released, this, &MainLayout::startTimer);
   connect(stopTxRx_Button, &QPushButton::released, this, &MainLayout::stopTimer);
   connect(timer, &QTimer::timeout, this, &MainLayout::txRxFromSerial);
   stopTxRx_Button->setEnabled(false);
+
+  updateLabel();
 }
 
 void MainLayout::startTimer()

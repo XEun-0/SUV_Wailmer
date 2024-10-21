@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 
     // Window title
     w->setWindowTitle("SUV_Wailmer Control Panel");
-    w->resize(800, 400);
+    w->resize(600, 400);
     // Display
     w->show();
 
