@@ -5,9 +5,30 @@
 Adafruit_BNO055 bno = Adafruit_BNO055();
 MS5837 sensor;
 
+// Macros
 #define SENSOR_BUFFER_SIZE 32
+#define CHECKSUM_SIZE 2
+#define STX_AND_ETX_BYTES 4
+#define OUT_BUTTER_SIZE  SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
+
 #define DEBUG_SENSORS 0
 #define DEBUG_TXRX 0
+#define DEBUG_SINGLE_TXRX 1
+
+#define STX 0x02
+#define ETX 0x03
+
+#define SERIAL_SEND_MS 150
+
+// Enums
+enum Progress_State {
+  INITIALIZED_SENSORS,
+  GO,
+  RUNNING,
+  NOGO
+};
+
+Progress_State currProg;
 
 struct SensorInfo {
   float baroPressure;  // Changed from float to float
@@ -32,8 +53,10 @@ void setup() {
   memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
   memset(&sensor_info, 0, SENSOR_BUFFER_SIZE);
   
-  InitializeBarometer();
-  InitializeIMU();
+  currProg = INITIALIZED_SENSORS;
+
+  int baroStatus =  InitializeBarometer();
+  int imuStatus =   InitializeIMU();
 
   byte readyMessage[] = {0xAA};
   byte confirmationMessage[] = {0xBB};
@@ -41,20 +64,50 @@ void setup() {
 
 // Loop forever
 void loop() {
-  // Serial.print("byte size: ");
-  // Serial.print(sizeof(sensor_info));
-  // Serial.print("\n");
 
 #if DEBUG_TXRX
   if (Serial.available() >= SENSOR_BUFFER_SIZE) {
-   Serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE);
-   memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
-   incrementSensorData();
-   memcpy(sensorBuffer, &sensor_info, SENSOR_BUFFER_SIZE);
-   Serial.write(sensorBuffer, SENSOR_BUFFER_SIZE);
+  Serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE);
+  memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  incrementSensorData();
+  memcpy(sensorBuffer, &sensor_info, SENSOR_BUFFER_SIZE);
+  Serial.write(sensorBuffer, SENSOR_BUFFER_SIZE);
   }
-#endif
+#elif DEBUG_SINGLE_TXRX
+  sensor.read();
+  
+  // IMU get new sensor event
+  sensors_event_t event; 
+  bno.getEvent(&event);
 
+  sensor_info.baroPressure = sensor.pressure();
+  sensor_info.baroTemp = sensor.temperature();
+  sensor_info.baroDepth = sensor.depth();
+  sensor_info.baroAltitude = sensor.altitude();
+  
+  sensor_info.imuOrientX = event.orientation.x;
+  sensor_info.imuOrientY = event.orientation.y;
+  sensor_info.imuOrientZ = event.orientation.z;
+  sensor_info.imuTemp = bno.getTemp();
+  
+  // bytes 0-27 = 28 bytes
+  memcpy(&sensorBuffer[0], &sensor_info.baroPressure, sizeof(sensor_info.baroPressure));
+  memcpy(&sensorBuffer[4], &sensor_info.baroTemp, sizeof(sensor_info.baroTemp));
+  memcpy(&sensorBuffer[8], &sensor_info.baroDepth, sizeof(sensor_info.baroDepth));
+  memcpy(&sensorBuffer[12], &sensor_info.baroAltitude, sizeof(sensor_info.baroAltitude));
+
+  memcpy(&sensorBuffer[16], &sensor_info.imuOrientX, sizeof(sensor_info.imuOrientX));
+  memcpy(&sensorBuffer[20], &sensor_info.imuOrientY, sizeof(sensor_info.imuOrientY));
+  memcpy(&sensorBuffer[24], &sensor_info.imuOrientZ, sizeof(sensor_info.imuOrientZ));
+  
+  // bytes 28-29 = 1 byte
+  memcpy(&sensorBuffer[28], &sensor_info.imuTemp, sizeof(sensor_info.imuTemp));
+
+  //Serial.write((uint8_t*)&sensor_info.imuOrientX, sizeof(sensor_info.imuOrientX));
+
+  Serial.write((uint8_t*)&sensorBuffer, SENSOR_BUFFER_SIZE);
+  // Serial.println(sensor_info.imuOrientX);
+#else
   // Update pressure and temperature readings
   sensor.read();
   
@@ -75,12 +128,9 @@ void loop() {
 
   sensor_info.checksum = calculateChecksum((uint8_t*)&sensor_info, SENSOR_BUFFER_SIZE - 1); // Exclude the checksum byte
 
-  //memcpy(sensorBuffer, &sensor_info, SENSOR_BUFFER_SIZE);
-  Serial.write((uint8_t*)&sensor_info.imuOrientX, sizeof(sensor_info.imuOrientX));
-
-  //Serial.write(sensorBuffer, SENSOR_BUFFER_SIZE);
-  //Serial.write((int8_t)sizeof(sensorBuffer));
-  //Serial.write((int8_t)sizeof(sensor_info));
+  memcpy(sensorBuffer, &sensor_info, SENSOR_BUFFER_SIZE);
+  Serial.write(sensorBuffer, SENSOR_BUFFER_SIZE);
+#endif 
 
 #if DEBUG_SENSORS
   Serial.println("\n\n\n\n\n");
@@ -97,9 +147,10 @@ void loop() {
   Serial.print("Checksum: "); Serial.println(sensor_info.checksum);
 #endif
 
-  //Serial.println(sizeof(sensor_info));
+    //Serial.println(sizeof(sensor_info));
 
-  delay(100);
+  delay(SERIAL_SEND_MS);
+  // }
 }
 
 // Function to increment each field of the sensor_info struct by 1
@@ -123,7 +174,7 @@ int16_t calculateChecksum(uint8_t *data, size_t length) {
 }
 
 // Turns Barometer data collecting on
-void InitializeBarometer() {
+int InitializeBarometer() {
   Wire.begin();       //Can use this if dealing with only 1 sensor
   //Wire.beginTransmission(0x76);
   while (!sensor.init()) {
@@ -132,16 +183,20 @@ void InitializeBarometer() {
   }
   sensor.setModel(MS5837::MS5837_30BA);
   sensor.setFluidDensity(997);      //(air ~ 1.23, freshwater ~ 997, seawater ~1029)
-}                                   //air is not accurate
+  
+  return 1;
+}                                  
 
 // Turns IMU data collecting on
-void InitializeIMU() {
+int InitializeIMU() {
   //Wire.begin();       //Can use this if dealing with only 1 sensor
-  //Wire.beginTransmission(0x28);
+  Wire.beginTransmission(0x28);
   if (!bno.begin()) {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("No BNO055 detected ... Check your wiring or I2C ADDR");
     while (1);
   }
   bno.setExtCrystalUse(true);
+
+  return 1;
 }

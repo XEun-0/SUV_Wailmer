@@ -7,9 +7,8 @@
 #include <QSizePolicy>
 #include <QLabel>
 #include <QTimer>
+#include <QSpacerItem>
 #include "../../../ROS_ws/src/Common/serialib.h"
-
-#define SENSOR_BUFFER_SIZE 32
 
 namespace Ui {
   class MainLayout;
@@ -40,10 +39,12 @@ private:
   // Buttons
   QPushButton *startTxRx_Button;
   QPushButton *stopTxRx_Button;
-  QPushButton *b3;
-  QPushButton *b4;
-  QPushButton *b5;
-  QPushButton *b6;
+  QPushButton *verticalUp_Button;
+  QPushButton *verticalDown_Button;
+  QPushButton *forward_Button;
+  QPushButton *backward_Button;
+  QPushButton *turnRight_Button;
+  QPushButton *turnLeft_Button;
 
   QTimer *timer;
 
@@ -51,5 +52,7 @@ private:
   void initializeUI();
   void updateLabel();
   int16_t calculateChecksum(uint8_t *data, size_t length);
+
+  uint8_t bytesAvailable;
 };
 #endif // MAINLAYOUT_H

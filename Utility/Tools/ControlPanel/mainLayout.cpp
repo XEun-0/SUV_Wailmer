@@ -13,6 +13,27 @@ char buffer[15] = "hello\n";
 
 #define BAUD_RATE 115200
 #define DEBUG_TXRX 0
+#define DEBUG_SINGLE_TXRX 1
+
+#define SENSOR_BUFFER_SIZE 32
+#define CHECKSUM_SIZE 2
+#define STX_AND_ETX_BYTES 4
+#define OUT_BUTTER_SIZE  SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
+
+#define STX 0x02
+#define ETX 0x03
+
+#define SERIAL_RECEIVE_MS 150
+
+enum Progress_State {
+  INITIALIZED_SENSORS,
+  GO,
+  RUNNING,
+  NOGO
+};
+
+Progress_State recvProg = NOGO;
+Progress_State currProg = NOGO;
 
 struct SensorInfo {
   float baroPressure;  // Changed from float to float
@@ -34,17 +55,9 @@ uint8_t outBuffer[SENSOR_BUFFER_SIZE];
 
 MainLayout::MainLayout(QWidget *parent)
   : QGridLayout(parent), timer(new QTimer(this)) {
-  
-  char errorOpening = serial.openDevice(SERIAL_PORT, BAUD_RATE);
-      
-  // If connection fails, return the error code otherwise, display a success message
-  if (errorOpening!=1) {
-    printf ("ERROR CONNECTING TO %s\n",SERIAL_PORT);
-  } else {
-    printf ("Successful connection to %s\n",SERIAL_PORT);
-    memset(outBuffer, 0, SENSOR_BUFFER_SIZE);
-    this->initializeUI();
-  }
+  this->initializeUI();
+  memset(outBuffer, 0, SENSOR_BUFFER_SIZE);
+  memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
 }
 
 void MainLayout::initializeUI() {
@@ -88,20 +101,29 @@ void MainLayout::initializeUI() {
   TxRxButtonLayout->addWidget(stopTxRx_Button, 1, 0, 1, 1);
   
   // Initialize Buttons
-  b3 = new QPushButton("C");
-  b4 = new QPushButton("D");
-  b5 = new QPushButton("E");
-  b6 = new QPushButton("F");
+  verticalUp_Button = new QPushButton("UP");
+  verticalDown_Button = new QPushButton("DOWN");
+  forward_Button = new QPushButton("Fwd");
+  backward_Button = new QPushButton("Bwd");
+  turnRight_Button = new QPushButton("Trn ->");
+  turnLeft_Button = new QPushButton("<- Trn");
+  QGridLayout *MovementControls = new QGridLayout();
+  // 00 01 02
+  // 10 11 12
+  // 20 21 22
+  MovementControls->addWidget(verticalUp_Button, 0, 2, 1, 1);
+  MovementControls->addWidget(verticalDown_Button, 2, 2, 1, 1);
   
-  // addWidget(*Widget, row, column, rowspan, colspan)
-  // 0th row
+  MovementControls->addWidget(forward_Button, 0, 1, 1, 1);
+  MovementControls->addWidget(backward_Button, 2, 1, 1, 1);
+  MovementControls->addWidget(turnRight_Button, 1, 2, 1, 1);
+  MovementControls->addWidget(turnLeft_Button, 1, 0, 1, 1);
+  QSpacerItem *verticalSpacer = new QSpacerItem(100, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  this->addItem(verticalSpacer, 3, 2, 1, 1);
+  
   this->addLayout(displayLayout,0,0,1,1);
   this->addLayout(TxRxButtonLayout, 3, 0, 1, 1);
-  // 1st row
-  this->addWidget(b4,1,0,1,1);
-
-  // 2nd row with 2-column span
-  this->addWidget(b5,2,0,1,2);
+  this->addLayout(MovementControls, 3, 3, 1, 1);
 
   // Connect button signal to appropriate slot
   connect(startTxRx_Button, &QPushButton::released, this, &MainLayout::startTimer);
@@ -112,7 +134,17 @@ void MainLayout::initializeUI() {
 
 void MainLayout::startTimer()
 {
-  timer->start(100); // Set interval to 100ms
+  char errorOpening = serial.openDevice(SERIAL_PORT, BAUD_RATE);
+      
+  // If connection fails, return the error code otherwise, display a success message
+  if (errorOpening!=1) {
+    printf ("ERROR CONNECTING TO %s\n",SERIAL_PORT);
+  } else {
+    printf ("Successful connection to %s\n",SERIAL_PORT);
+  }
+  serial.flushReceiver();
+
+  timer->start(SERIAL_RECEIVE_MS); // Set interval to 100ms
   startTxRx_Button->setEnabled(false);
   stopTxRx_Button->setEnabled(true);
 }
@@ -123,17 +155,19 @@ void MainLayout::stopTimer()
   timer->stop();
   startTxRx_Button->setEnabled(true);
   stopTxRx_Button->setEnabled(false);
+  serial.closeDevice();
+  currProg = NOGO;
 }
 
 // Function called by the timer every second
 void MainLayout::txRxFromSerial()
 {
-  printf("%ld\n", sizeof(sensor_info));
+  //printf("%ld\n", sizeof(sensor_info));
 
 #if DEBUG_TXRX
   // Barometer
-  sensor_info.baroPressure = 11;
-  sensor_info.baroTemp = 1;
+  sensor_info.baroPressure = 11.12;
+  sensor_info.baroTemp = 1.34;
   sensor_info.baroDepth = 2;
   sensor_info.baroAltitude = 3;
   
@@ -148,31 +182,101 @@ void MainLayout::txRxFromSerial()
   serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
   memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
   updateLabel();
+#elif DEBUG_SINGLE_TXRX
+  // switch (recvProg) {
+  //   case INITIALIZED_SENSORS:
+  //     currProg = RUNNING;
+  //     serial.writeBytes((uint8_t*)&currProg, 1);
+  //     recvProg = currProg;
+  //     break;
+  //   case GO:
+  //     break;
+  //   case RUNNING: {
+  //     uint8_t byteFloatBuffer[sizeof(sensor_info.imuOrientX)];
+  //     float rxFloat = 0;
+      
+  //     serial.readBytes(byteFloatBuffer, sizeof(sensor_info.imuOrientX), 2000, 1000);
+  //     //if (bytesRead == sizeof(sensor_info.imuOrientX)) {
+  //       memcpy(&rxFloat, byteFloatBuffer, sizeof(rxFloat));
+      
+  //       printf("value is %f\n", rxFloat);
+  //     //}
+  //     break;
+  //   }
+  //   case NOGO:
+  //   default: {
+  //     uint8_t msgBuffer[1];
+  //     memset(msgBuffer, 0, 1);
+
+  //     serial.readBytes(msgBuffer, 1, 2000, 1000);
+      
+  //     recvProg = (Progress_State)msgBuffer[0];
+  //     currProg = recvProg;
+  //     printf("value is %d\n", recvProg);
+  //   }
+  // }
+  
+  // uint8_t byteFloatBuffer[sizeof(sensor_info.imuOrientX)];
+  // float rxFloat = 0;
+  
+  // serial.readBytes(byteFloatBuffer, sizeof(sensor_info.imuOrientX), 2000, 1000);
+  //if (bytesRead == sizeof(sensor_info.imuOrientX)) {
+  // memcpy(&rxFloat, byteFloatBuffer, sizeof(rxFloat));
+
+  // printf("value is %f\n", rxFloat);
+
+  // Wait until guaranteed 32 bytes inside recieve buffer
+  bytesAvailable = serial.available();
+  printf("bytes available: %d\n", bytesAvailable);
+  
+  if (bytesAvailable != SENSOR_BUFFER_SIZE && currProg != GO) {
+    serial.flushReceiver();
+    return;
+  } else {
+    currProg = GO;
+  }
+  
+  serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
+  
+  // memcpy(&sensor_info.baroPressure, &sensorBuffer[0], sizeof(sensor_info.baroPressure));
+  // memcpy(&sensor_info.baroTemp, &sensorBuffer[4], sizeof(sensor_info.baroTemp));
+  // memcpy(&sensor_info.baroDepth, &sensorBuffer[8], sizeof(sensor_info.baroDepth));
+  // memcpy(&sensor_info.baroAltitude, &sensorBuffer[12], sizeof(sensor_info.baroAltitude));
+
+  // memcpy(&sensor_info.imuOrientX, &sensorBuffer[16], sizeof(sensor_info.imuOrientX));
+  // memcpy(&sensor_info.imuOrientY, &sensorBuffer[20], sizeof(sensor_info.imuOrientY));
+  // memcpy(&sensor_info.imuOrientZ, &sensorBuffer[24], sizeof(sensor_info.imuOrientZ));
+
+  // // bytes 28-29 = 1 byte
+  // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
+
+  memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  updateLabel();
+  //}
 #else
   //serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
   
-  uint8_t byteFloatBuffer[sizeof(sensor_info.imuOrientX)];
-  float rxFloat = 0;
-  serial.readBytes(byteFloatBuffer, sizeof(sensor_info.imuOrientX), 2000, 1000);
-
-  memcpy(&rxFloat, byteFloatBuffer, sizeof(rxFloat));
+  
+  int bytesRead = serial.readBytes(sensorBuffer, sizeof(sensor_info), 2000, 1000);
+  if (bytesRead == SENSOR_BUFFER_SIZE) {
+    memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+    printf("sensor_info.imuOrientX is %f\n", sensor_info.imuOrientX);
+  }
   printf("sensorBuffer is %d bytes\n", (int)sizeof(sensorBuffer));
   printf("sensor_info is %d bytes\n", (int)sizeof(sensor_info));
-  printf("value is %f bytes\n", rxFloat);
   
-  memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  
 
+  // // Verify checksum
+  // uint16_t receivedChecksum = sensor_info.checksum;
+  // uint16_t calculatedChecksum = calculateChecksum((uint8_t*)&sensor_info, SENSOR_BUFFER_SIZE - 1); // Exclude checksum byte
 
-  // Verify checksum
-  uint16_t receivedChecksum = sensor_info.checksum;
-  uint16_t calculatedChecksum = calculateChecksum((uint8_t*)&sensor_info, SENSOR_BUFFER_SIZE - 1); // Exclude checksum byte
-
-  if (receivedChecksum == calculatedChecksum) {
-    updateLabel();
-  } else {
-    // Debugging output for checksum mismatch
-    printf("Checksum mismatch! Received: %d, Calculated: %d\n", receivedChecksum, calculatedChecksum);
-  }
+  // if (receivedChecksum == calculatedChecksum) {
+  //   updateLabel();
+  // } else {
+  //   // Debugging output for checksum mismatch
+  //   printf("Checksum mismatch! Received: %d, Calculated: %d\n", receivedChecksum, calculatedChecksum);
+  // }
 #endif 
 }
 
@@ -186,14 +290,14 @@ int16_t MainLayout::calculateChecksum(uint8_t *data, size_t length) {
 
 void MainLayout::updateLabel() {
   // Barometer
-  baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(sensor_info.baroPressure));
-  baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(sensor_info.baroTemp));
-  baroDepth_Label->setText(QString("Barometer Depth: %1").arg(sensor_info.baroDepth));
-  baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(sensor_info.baroAltitude));
+  baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(sensor_info.baroPressure, 0, 'f', 2));
+  baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(sensor_info.baroTemp, 0, 'f', 2));
+  baroDepth_Label->setText(QString("Barometer Depth: %1").arg(sensor_info.baroDepth, 0, 'f', 2));
+  baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(sensor_info.baroAltitude, 0, 'f', 2));
   
   // IMU
-  imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(sensor_info.imuOrientX));
-  imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(sensor_info.imuOrientY));
-  imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(sensor_info.imuOrientZ));
+  imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(sensor_info.imuOrientX, 0, 'f', 2));
+  imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(sensor_info.imuOrientY, 0, 'f', 2));
+  imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(sensor_info.imuOrientZ, 0, 'f', 2));
   imuTemp_Label->setText(QString("IMU Temperature: %1").arg(sensor_info.imuTemp));
 }
