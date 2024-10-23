@@ -137,7 +137,7 @@ void setup() {
   byte readyMessage[] = {0xAA};
   byte confirmationMessage[] = {0xBB};
 
-  // Create Task 1
+  // Create Sensor Aggregation Task
   xTaskCreate(
     AggregateSensorsTask,    // Function to be called
     "AggregateSensorsTask", // Name of the task
@@ -147,7 +147,7 @@ void setup() {
     &AggregateSensorsTaskHandle // Task handle for reference
   );
 
-  // Create Task 2
+  // Create Motor Commands Task
   xTaskCreate(
     MotorCommandsTask,    // Function to be called
     "MotorCommandsTask", // Name of the task
