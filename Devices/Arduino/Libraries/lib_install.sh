@@ -12,6 +12,8 @@
 # arduino-cli lib list
 
 # Install the library
+arduino-cli lib install FreeRTOS
+arduino-cli lib install Servo
 arduino-cli lib install --zip-path Adafruit_Unified_Sensor-1.1.14.zip
 arduino-cli lib install --zip-path Adafruit_BNO055-1.6.3.zip
 arduino-cli lib install --zip-path Adafruit_BusIO-1.16.1.zip
