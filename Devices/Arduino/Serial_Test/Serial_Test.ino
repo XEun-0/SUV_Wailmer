@@ -27,10 +27,12 @@ Servo back_left_thruster;
 Servo back_right_thruster;
 
 // Macros
-#define SENSOR_BUFFER_SIZE      32
-#define CHECKSUM_SIZE           2
-#define STX_AND_ETX_BYTES       4
-#define OUT_BUFFER_SIZE         SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
+#define SENSOR_BUFFER_SIZE              32
+#define THRUSTER_COMMAND_BUFFER_SIZE    32 //temp size may change
+#define THRUSTER_READY_MS               7000
+#define CHECKSUM_SIZE                   2
+#define STX_AND_ETX_BYTES               4
+#define OUT_BUFFER_SIZE                 SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
 
 #define DEBUG_SENSORS           0
 #define DEBUG_TXRX              0
@@ -46,14 +48,22 @@ bool firstTime = true;
 TaskHandle_t AggregateSensorsTaskHandle, MotorCommandsTaskHandle;
 
 // Enums
-enum Progress_State {
+enum ProgressState {
   INITIALIZED_SENSORS,
   GO,
   RUNNING,
   NOGO
 };
+ProgressState progressState;
 
-Progress_State currProg;
+// Thruster Controller State
+enum ThrusterControllerState {
+  THRUSTER_INIT,
+  THRUSTER_ARM,
+  THRUSTER_GO,
+  THRUSTER_NOGO
+};
+ThrusterControllerState thrusterCommState;
 
 struct SensorInfo {
   float baroPressure;   // 4
@@ -72,6 +82,7 @@ struct SensorInfo {
 SensorInfo sensor_info;
 
 uint8_t sensorBuffer[SENSOR_BUFFER_SIZE];
+uint8_t thrusterCommandsBuffer[THRUSTER_COMMAND_BUFFER_SIZE];
 
 void AggregateSensorsTask(void *pvParams) {
   while (1) {
@@ -112,11 +123,32 @@ void AggregateSensorsTask(void *pvParams) {
 
 void MotorCommandsTask(void *pvParams) {
   while (1) {
-    if (firstTime) {
-      vTaskDelay(pdMS_TO_TICKS(7000));
-    }
+    // // Thruster Controller State
+    // enum ThrusterControllerState {
+    //   THRUSTER_INIT,
+    //   THRUSTER_ARM,
+    //   THRUSTER_GO,
+    //   THRUSTER_NOGO
+    // };
     
-    //SlowMotorSpin();
+    // switch (thrusterCommState) {
+    // case THRUSTER_INIT:
+    //   // BlueRobotics suggest waiting 7 seconds.
+    //   vTaskDelay(pdMS_TO_TICKS(7000));
+    //   thrusterCommState = 
+    //   break;
+    // case THRUSTER_ARM:
+    //   // Arm thrusters by sending
+    //   break;
+    // default:
+    //   break;
+    // }
+    
+    // if (firstTime) {
+    //   vTaskDelay(pdMS_TO_TICKS(7000));
+    // }
+    
+    // //SlowMotorSpin();
     
     vTaskDelay(SERIAL_SEND_MS / portTICK_PERIOD_MS);
   }
@@ -128,14 +160,16 @@ void setup() {
   memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
   memset(&sensor_info, 0, SENSOR_BUFFER_SIZE);
   
-  currProg = INITIALIZED_SENSORS;
-
   int baroStatus =      InitializeBarometer();
   int imuStatus =       InitializeIMU();
   //int controlsStatus =  InitializeControls();
 
   byte readyMessage[] = {0xAA};
   byte confirmationMessage[] = {0xBB};
+
+  // Initialize state variables
+  thrusterCommState =   THRUSTER_INIT;
+  progressState =       INITIALIZED_SENSORS;
 
   // Create Sensor Aggregation Task
   xTaskCreate(

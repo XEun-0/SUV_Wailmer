@@ -43,8 +43,14 @@ private:
   QLabel *imuOrientZ_Label;
   QLabel *imuTemp_Label;
 
-  QLabel *currentMotorSpeed_Label;
+  QLabel *currentMotorSpeed1_Label;
+  QLabel *currentMotorSpeed2_Label;
+  QLabel *currentMotorSpeed3_Label;
+  QLabel *currentMotorSpeed4_Label;
+  QLabel *currentMotorSpeed5_Label;
+  QLabel *currentMotorSpeed6_Label;
   QLabel *sensorSerialConf_Label;
+  QLabel *thrusterControllerState_Label;
   
   // Buttons
   QPushButton *startTxRx_Button;
