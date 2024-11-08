@@ -63,6 +63,8 @@ MainLayout::MainLayout(QWidget *parent)
 }
 
 void MainLayout::initializeUI() {
+  
+  /////displayLayout//////
   // Initialize Labels
   baroPressure_Label =  new QLabel("baroPressure: ");
   baroTemp_Label =      new QLabel("baroTemp: ");
@@ -74,11 +76,7 @@ void MainLayout::initializeUI() {
   imuOrientZ_Label =    new QLabel("imuOrientZ: ");
   imuTemp_Label =       new QLabel("imuTemp: ");
 
-  currentMotorSpeed_Label = new QLabel("Motor Speed: ");
   sensorSerialConf_Label = new QLabel("Sensor Serial Status: NOGO");
-  QGridLayout *statusDisplayLayout = new QGridLayout();
-  statusDisplayLayout->addWidget(currentMotorSpeed_Label, 0, 0, 1, 1);
-  statusDisplayLayout->addWidget(sensorSerialConf_Label, 1, 0, 1, 1);
 
   QGridLayout *displayLayout = new QGridLayout();
   // Barometer Sensor Labels
@@ -92,6 +90,29 @@ void MainLayout::initializeUI() {
   displayLayout->addWidget(imuOrientY_Label, 5, 0, 1, 1);
   displayLayout->addWidget(imuOrientZ_Label, 6, 0, 1, 1);
   displayLayout->addWidget(imuTemp_Label, 7, 0, 1, 1);
+
+  displayLayout->addWidget(sensorSerialConf_Label, 8, 0, 1, 1);
+  /////displayLayout//////
+
+  /////statusDisplayLayout//////
+  currentMotorSpeed1_Label = new QLabel("Thruster 1 Speed: ");
+  currentMotorSpeed2_Label = new QLabel("Thruster 2 Speed: ");
+  currentMotorSpeed3_Label = new QLabel("Thruster 3 Speed: ");
+  currentMotorSpeed4_Label = new QLabel("Thruster 4 Speed: ");
+  currentMotorSpeed5_Label = new QLabel("Thruster 5 Speed: ");
+  currentMotorSpeed6_Label = new QLabel("Thruster 6 Speed: ");
+
+  thrusterControllerState_Label = new QLabel("Thruster Controller State: ");
+
+  QGridLayout *statusDisplayLayout = new QGridLayout();
+  statusDisplayLayout->addWidget(currentMotorSpeed1_Label, 0, 0, 1, 1);
+  statusDisplayLayout->addWidget(currentMotorSpeed2_Label, 1, 0, 1, 1);
+  statusDisplayLayout->addWidget(currentMotorSpeed3_Label, 2, 0, 1, 1);
+  statusDisplayLayout->addWidget(currentMotorSpeed4_Label, 3, 0, 1, 1);
+  statusDisplayLayout->addWidget(currentMotorSpeed5_Label, 4, 0, 1, 1);
+  statusDisplayLayout->addWidget(currentMotorSpeed6_Label, 5, 0, 1, 1);
+  statusDisplayLayout->addWidget(thrusterControllerState_Label, 6, 0, 1, 1);
+  /////statusDisplayLayout//////
 
   // TxRx buttons and layout
   QGridLayout *TxRxButtonLayout = new QGridLayout();
@@ -110,23 +131,23 @@ void MainLayout::initializeUI() {
   
   // Initialize Buttons
   verticalUp_Button = new QPushButton("UP");
-  verticalUp_Button->setFixedSize(QSize(75, 75));
+  verticalUp_Button->setFixedSize(QSize(75, 40));
   //verticalUp_Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
   verticalDown_Button = new QPushButton("DOWN");
-  verticalDown_Button->setFixedSize(QSize(75, 75));
+  verticalDown_Button->setFixedSize(QSize(75, 40));
   
   forward_Button = new QPushButton("Fwd");
-  forward_Button->setFixedSize(QSize(75, 75));
+  forward_Button->setFixedSize(QSize(75, 40));
   
   backward_Button = new QPushButton("Bwd");
-  backward_Button->setFixedSize(QSize(75, 75));
+  backward_Button->setFixedSize(QSize(75, 40));
   
   turnRight_Button = new QPushButton("Trn ->");
-  turnRight_Button->setFixedSize(QSize(75, 75));
+  turnRight_Button->setFixedSize(QSize(75, 40));
   
   turnLeft_Button = new QPushButton("<- Trn");
-  turnLeft_Button->setFixedSize(QSize(75, 75));
+  turnLeft_Button->setFixedSize(QSize(75, 40));
 
   QGridLayout *MovementControls = new QGridLayout();
   // 00 01 02

@@ -58,7 +58,8 @@ RUN apt-get update && apt-get install -y \
     x11-apps \
     sudo \
     && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -U platformio
 
 # Create a new user with sudo privileges
 RUN groupadd --gid $USER_GID $USERNAME \
