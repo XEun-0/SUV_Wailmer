@@ -3,6 +3,7 @@
 ThrusterController::ThrusterController() {}
 
 int ThrusterController::InitializeThrusters() {
+    thrusterCommState = THRUSTER_INIT;
     return 0;
 }
 
@@ -22,12 +23,20 @@ int ThrusterController::Run() {
         InitializeControls();
         
         vTaskDelay(pdMS_TO_TICKS(THRUSTER_READY_MS));
+        
+        left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
+        vTaskDelay(pdMS_TO_TICKS(THRUSTER_READY_MS));
+
         thrusterCommState = THRUSTER_ARM;
         break;
     case THRUSTER_ARM:
+        // Thruster testing and thruster arm can probably be in the 
+        // same state. SUV-19
+        
         // Arm thrusters by sending
-
+        left_thruster.writeMicroseconds(1600);
         // 50 * 100 = 5 Seconds
+        
         vTaskDelay((THRUSTER_TASK_MS  * 50) / portTICK_PERIOD_MS);
         break;
     case THRUSTER_TESTING:
@@ -40,10 +49,14 @@ int ThrusterController::Run() {
         break;
     case THRUSTER_GO:
         // Construct thruster buffer to send
+
+        // receive a command [ go down ]
+
+        // commmand -> send the values of the command to my motors
         vTaskDelay(THRUSTER_TASK_MS / portTICK_PERIOD_MS);
         break;
     default:
-      break;
+        break;
     }
 }
 
@@ -55,7 +68,7 @@ int ThrusterController::InitializeControls() {
     back_left_thruster.attach(BACK_LEFT_THRUSTER_PIN);
     back_right_thruster.attach(BACK_RIGHT_THRUSTER_PIN);
 
-    left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
+    
     right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);

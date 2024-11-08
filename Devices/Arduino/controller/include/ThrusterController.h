@@ -9,12 +9,12 @@
 
 // Motors
 // Pins should 8-13
-#define LEFT_THRUSTER_PIN         11
-#define RIGHT_THRUSTER_PIN        10
-#define FRONT_RIGHT_THRUSTER_PIN  5
-#define FRONT_LEFT_THRUSTER_PIN   6
-#define BACK_LEFT_THRUSTER_PIN    9
-#define BACK_RIGHT_THRUSTER_PIN   7
+#define LEFT_THRUSTER_PIN         8         // 8
+#define RIGHT_THRUSTER_PIN        13        // 13
+#define FRONT_RIGHT_THRUSTER_PIN  12        // 12
+#define FRONT_LEFT_THRUSTER_PIN   10        // 10
+#define BACK_LEFT_THRUSTER_PIN    9         // 9
+#define BACK_RIGHT_THRUSTER_PIN   11        // 11
 
 #define MOTOR_STOP_COMMAND        1500
 
@@ -32,13 +32,33 @@ public:
     int InitializeThrusters();
     int GetTaskMS();
 
-    // Thruster Controller State
+    /**
+     * Current thruster controller state.
+     * THRUSTER_INIT            Attach thruster motors to correct pin number
+     * THRUSTER_ARM             Wait until thrusters ready and recieve STOP command
+     * THRUSTER_TESTING         Testing state-machine state for making sure all thrusters
+     *                          are spinning or able to recieve spin commands. 
+     * THRUSTER_GO              
+     * THRUSTER_NOGO
+     */
     enum ThrusterControllerState {
         THRUSTER_INIT,
         THRUSTER_ARM,
         THRUSTER_TESTING,
         THRUSTER_GO,
         THRUSTER_NOGO
+    };
+
+    /**
+     * Enum for current thruster being tested.
+     */
+    enum ThrusterTestState {
+        THRUSTER_ONE,
+        THRUSTER_TWO,
+        THRUSTER_THREE,
+        THRUSTER_FOUR,
+        THRUSTER_FIVE,
+        THRUSTER_SIX
     };
     
     TaskHandle_t ThrusterCommandsTaskHandle;
