@@ -5,6 +5,8 @@
 #include "MS5837.h"
 #include <Adafruit_BNO055.h>
 #include <Arduino_FreeRTOS.h>
+// #include <semphr.h>
+#include "Common/CommonStructs.h"
 
 // Macros
 #define SENSOR_BUFFER_SIZE              32
@@ -15,6 +17,7 @@
 #define DEBUG_SENSORS           0
 #define DEBUG_TXRX              0
 #define DEBUG_SINGLE_TXRX       0
+#define DEBUG_SERIAL            0
 
 #define STX 0x02
 #define ETX 0x03
@@ -26,7 +29,7 @@ class SensorController {
 public:
     SensorController();
     
-    int Run();
+    int Run(SemaphoreHandle_t msgSemaphore);
     int InitializeSensors();
     int GetTaskMS();
 

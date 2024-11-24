@@ -35,8 +35,8 @@ int ThrusterController::Run() {
         
         // Arm thrusters by sending
         left_thruster.writeMicroseconds(1600);
-        // 50 * 100 = 5 Seconds
         
+        // 50 * 100 = 5 Seconds
         vTaskDelay((THRUSTER_TASK_MS  * 50) / portTICK_PERIOD_MS);
         break;
     case THRUSTER_TESTING:
@@ -61,6 +61,7 @@ int ThrusterController::Run() {
 }
 
 int ThrusterController::InitializeControls() {
+    // Assigned thruster hardware pins to servo objects
     left_thruster.attach(LEFT_THRUSTER_PIN);
     right_thruster.attach(RIGHT_THRUSTER_PIN);
     front_right_thruster.attach(FRONT_RIGHT_THRUSTER_PIN);
@@ -68,7 +69,7 @@ int ThrusterController::InitializeControls() {
     back_left_thruster.attach(BACK_LEFT_THRUSTER_PIN);
     back_right_thruster.attach(BACK_RIGHT_THRUSTER_PIN);
 
-    
+    // Send stop command to thrusters
     right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);

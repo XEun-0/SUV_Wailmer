@@ -6,6 +6,7 @@
 #include <Adafruit_BNO055.h>
 #include <Arduino_FreeRTOS.h>
 #include <Servo.h>
+#include <semphr.h>
 
 // Motors
 // Pins should 8-13
