@@ -2,10 +2,11 @@
 #define COMMONSTRUCTS_H
 
 #include <semphr.h>
+#include "../statusMsg.h"
 
 typedef struct {
-    SemaphoreHandle_t semaphore;
-
+  SemaphoreHandle_t semaphore;
+  
 } TaskParams;
 
 // Enums

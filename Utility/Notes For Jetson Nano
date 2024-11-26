@@ -39,3 +39,6 @@ Line-ending issues:
 
 // Notes for first time new machine running any of the containers,
 delete ROS_ws\(build, install, log)
+
+// Platformio
+platformio device monitor

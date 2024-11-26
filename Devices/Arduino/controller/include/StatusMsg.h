@@ -8,7 +8,8 @@ public:
     // Setter methods
     
 private:
-
+    uint8_t validationbyte;
+    
 };
 
 #endif //STATUSMSG_H

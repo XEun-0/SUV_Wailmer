@@ -1,4 +1,4 @@
-#include "ThrusterController.h"
+#include "thrusterController.h"
 
 ThrusterController::ThrusterController() {}
 

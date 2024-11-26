@@ -3,11 +3,14 @@
 #include <Adafruit_BNO055.h>
 #include <Arduino_FreeRTOS.h>
 #include <Servo.h>
-#include "SensorController.h"
-#include "ThrusterController.h"
-#include "SerialDataHandler.h"
+#include "sensorController.h"
+#include "thrusterController.h"
+#include "serialDataHandler.h"
+#include "statusMsg.h"
 
 static SemaphoreHandle_t msgSemaphore;
+static StatusMsg         statusMsg;
+static TaskParams        taskParameters;
 
 SensorController    *sensors;
 ThrusterController  *thrusters;
@@ -33,8 +36,8 @@ void ThrusterCommandsTask(void *pvParams) {
 
 void AggregateSensorsTask(void *pvParams) {
     while (1) {
-        SemaphoreHandle_t msgSemaphore = (SemaphoreHandle_t)pvParams;
-        sensors->Run(msgSemaphore);
+        SemaphoreHandle_t xSemaphore = (SemaphoreHandle_t)pvParams;
+        sensors->Run(xSemaphore);
 
         vTaskDelay( sensors->GetTaskMS() / portTICK_PERIOD_MS);
     }

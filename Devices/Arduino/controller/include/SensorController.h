@@ -6,7 +6,7 @@
 #include <Adafruit_BNO055.h>
 #include <Arduino_FreeRTOS.h>
 // #include <semphr.h>
-#include "Common/CommonStructs.h"
+#include "Common/commonTypes.h"
 
 // Macros
 #define SENSOR_BUFFER_SIZE              32
@@ -17,7 +17,7 @@
 #define DEBUG_SENSORS           0
 #define DEBUG_TXRX              0
 #define DEBUG_SINGLE_TXRX       0
-#define DEBUG_SERIAL            0
+#define DEBUG_SERIAL            1
 
 #define STX 0x02
 #define ETX 0x03

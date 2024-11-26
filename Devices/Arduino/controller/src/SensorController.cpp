@@ -1,4 +1,4 @@
-#include "SensorController.h"
+#include "sensorController.h"
 
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
@@ -44,10 +44,13 @@ int SensorController::Run(SemaphoreHandle_t msgSemaphore) {
 #if DEBUG_SERIAL != 1
     Serial.write((uint8_t*)&sensorBuffer, SENSOR_BUFFER_SIZE);
 #else
-    
+    Serial.println("Hello");
+
 #endif
     if (msgSemaphore != NULL) {
-
+        Serial.println("SEMAPHORE IS THEREEEEEE");
+    } else {
+        Serial.println("SEMAPHORE IS NULL");
     }
     // set sensor data
     // motor task gives up semaphore, sensor takes and give up semaphore, aggregator 
