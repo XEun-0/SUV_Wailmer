@@ -11,7 +11,7 @@ int SensorController::InitializeSensors() {
     int imuStatus =       InitializeIMU();
 }
 
-int SensorController::Run(SemaphoreHandle_t msgSemaphore) { 
+int SensorController::Run(TaskParams_t* params) { 
     sensor.read();
 
     // IMU get new sensor event
@@ -47,8 +47,10 @@ int SensorController::Run(SemaphoreHandle_t msgSemaphore) {
     Serial.println("Hello");
 
 #endif
-    if (msgSemaphore != NULL) {
+    
+    if (params->msgSemaphore != NULL) {
         Serial.println("SEMAPHORE IS THEREEEEEE");
+        Serial.println(params->statusMsg->GetValidationByte());
     } else {
         Serial.println("SEMAPHORE IS NULL");
     }

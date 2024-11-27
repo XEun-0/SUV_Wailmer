@@ -1,13 +1,17 @@
 #ifndef COMMONSTRUCTS_H
 #define COMMONSTRUCTS_H
 
+#include <stdint.h>
+#include <Arduino_FreeRTOS.h>
 #include <semphr.h>
-#include "../statusMsg.h"
+
+// Forward declaration for StatusMsg class
+class StatusMsg;
 
 typedef struct {
-  SemaphoreHandle_t semaphore;
-  
-} TaskParams;
+  SemaphoreHandle_t   msgSemaphore;
+  StatusMsg*          statusMsg;
+} TaskParams_t;
 
 // Enums
 typedef enum {
@@ -15,7 +19,7 @@ typedef enum {
   GO,
   RUNNING,
   NOGO
-} ProgressState;
+} ProgressState_t;
 // ProgressState progressState;
 
 #endif //COMMONSTRUCTS_H

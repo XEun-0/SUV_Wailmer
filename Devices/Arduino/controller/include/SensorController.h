@@ -4,8 +4,7 @@
 #include <Wire.h>
 #include "MS5837.h"
 #include <Adafruit_BNO055.h>
-#include <Arduino_FreeRTOS.h>
-// #include <semphr.h>
+#include "statusMsg.h"
 #include "Common/commonTypes.h"
 
 // Macros
@@ -29,7 +28,7 @@ class SensorController {
 public:
     SensorController();
     
-    int Run(SemaphoreHandle_t msgSemaphore);
+    int Run(TaskParams_t* params);
     int InitializeSensors();
     int GetTaskMS();
 

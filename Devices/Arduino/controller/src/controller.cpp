@@ -8,17 +8,13 @@
 #include "serialDataHandler.h"
 #include "statusMsg.h"
 
-static SemaphoreHandle_t msgSemaphore;
-static StatusMsg         statusMsg;
-static TaskParams        taskParameters;
-
 SensorController    *sensors;
 ThrusterController  *thrusters;
 SerialDataHandler   *serialHandler;
 
 void SerialMsgTask(void *pvParams) {
     while (1) {
-        
+        TaskParams_t* params = (TaskParams_t*)pvParams;
         serialHandler->Run();
 
         vTaskDelay( thrusters->GetTaskMS() / portTICK_PERIOD_MS);
@@ -27,7 +23,7 @@ void SerialMsgTask(void *pvParams) {
 
 void ThrusterCommandsTask(void *pvParams) {
     while (1) {
-        
+        TaskParams_t* params = (TaskParams_t*)pvParams;
         thrusters->Run();
 
         vTaskDelay( thrusters->GetTaskMS() / portTICK_PERIOD_MS);
@@ -36,8 +32,9 @@ void ThrusterCommandsTask(void *pvParams) {
 
 void AggregateSensorsTask(void *pvParams) {
     while (1) {
-        SemaphoreHandle_t xSemaphore = (SemaphoreHandle_t)pvParams;
-        sensors->Run(xSemaphore);
+        TaskParams_t* params = (TaskParams_t*)pvParams;
+        //params->statusMsg->SetValidationByte(4);
+        sensors->Run(params);
 
         vTaskDelay( sensors->GetTaskMS() / portTICK_PERIOD_MS);
     }
@@ -61,14 +58,15 @@ void setup() {
     // Priority Inheritance	    Yes	                            No
     // Initial State	        Given	                        Taken
     // Best Use Case	        Protecting shared resources	    Task signaling or event handling
-    msgSemaphore = xSemaphoreCreateMutex();
+    StatusMsg* statusMsg = new StatusMsg();
+    TaskParams_t taskParameters = {xSemaphoreCreateMutex(), statusMsg};
 
     // Create Serial data handling task. 
     xTaskCreate(
         SerialMsgTask,                              // Function to be called
         "SerialMsgTask",                            // Name of the task
         512,                                        // Stack size
-        (void *)msgSemaphore,                       // Parameters passed to task
+        &taskParameters,                       // Parameters passed to task
         2,                                          // Task priority (higher number = higher priority)
         &(serialHandler->SerialDataHandlerTaskHandle) // Task handle for reference
     );
@@ -78,7 +76,7 @@ void setup() {
         AggregateSensorsTask,                       // Function to be called
         "AggregateSensorsTask",                     // Name of the task
         512,                                        // Stack size
-        (void *)msgSemaphore,                       // Parameters passed to task
+        &taskParameters,                       // Parameters passed to task
         3,                                          // Task priority (higher number = higher priority)
         &(sensors->AggregateSensorsTaskHandle)      // Task handle for reference
     );
@@ -88,7 +86,7 @@ void setup() {
         ThrusterCommandsTask,                       // Function to be called
         "MotorCommandsTask",                        // Name of the task
         512,                                        // Stack size
-        (void *)msgSemaphore,                       // Parameters passed to task
+        &taskParameters,                       // Parameters passed to task
         1,                                          // Task priority
         &(thrusters->ThrusterCommandsTaskHandle)    // Task handle for reference
     );
