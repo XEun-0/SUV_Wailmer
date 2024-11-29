@@ -44,15 +44,26 @@ int SensorController::Run(TaskParams_t* params) {
 #if DEBUG_SERIAL != 1
     Serial.write((uint8_t*)&sensorBuffer, SENSOR_BUFFER_SIZE);
 #else
-    Serial.println("Hello");
+    //Serial.println("Hello");
 
 #endif
     
     if (params->msgSemaphore != NULL) {
-        Serial.println("SEMAPHORE IS THEREEEEEE");
-        Serial.println(params->statusMsg->GetValidationByte());
+        Serial.println("Semaphore exists.");
+        params->statusMsg->SetSensorOutInfo(sensor_info);
+        // Print the buffer
+        for (int i = 0; i < 32; i++) {
+            Serial.print(sensorBuffer[i], HEX); // Print as hexadecimal
+            Serial.print(",");
+        }
+        Serial.println("\n");
+        for (int i = 0; i < 32; i++) {
+            Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
+            Serial.print(",");
+        }
+        Serial.println("\n");
     } else {
-        Serial.println("SEMAPHORE IS NULL");
+        Serial.println("Semaphore does not exist.");
     }
     // set sensor data
     // motor task gives up semaphore, sensor takes and give up semaphore, aggregator 

@@ -11,7 +11,7 @@
 #define SENSOR_BUFFER_SIZE              32
 #define CHECKSUM_SIZE                   2
 #define STX_AND_ETX_BYTES               4
-#define OUT_BUFFER_SIZE                 SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
+// #define OUT_BUFFER_SIZE                 SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
 
 #define DEBUG_SENSORS           0
 #define DEBUG_TXRX              0
@@ -31,21 +31,6 @@ public:
     int Run(TaskParams_t* params);
     int InitializeSensors();
     int GetTaskMS();
-
-    struct SensorInfo {
-        float baroPressure;     // 4
-        float baroTemp;         // 4
-        float baroDepth;        // 4
-        float baroAltitude;     // 4
-
-        float imuOrientX;       // 4
-        float imuOrientY;       // 4
-        float imuOrientZ;       // 4
-        uint8_t imuTemp;        // 1
-        uint8_t padding1[1];    // 1 byte. Current patch leaving at 1 padding byte just in
-                                // checksum might need to be used. 
-        uint16_t checksum;      // 2
-    }; // 4 x 7 + 1 + 2 = 32 bytes
 
     TaskHandle_t AggregateSensorsTaskHandle;
 private:

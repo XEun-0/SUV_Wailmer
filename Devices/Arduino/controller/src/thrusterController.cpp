@@ -4,6 +4,7 @@ ThrusterController::ThrusterController() {}
 
 int ThrusterController::InitializeThrusters() {
     thrusterCommState = THRUSTER_INIT;
+    memset(&thruster_info, 0, THRUSTER_INFO_SIZE);
     return 0;
 }
 
@@ -16,7 +17,6 @@ int ThrusterController::Run() {
     //   THRUSTER_GO,
     //   THRUSTER_NOGO
     // };
-
     switch (thrusterCommState) {
     case THRUSTER_INIT:
         // BlueRobotics suggest waiting 7 seconds.
@@ -79,13 +79,18 @@ int ThrusterController::InitializeControls() {
     return 0;
 }
 
+void ThrusterController::SetThrusterSpeed(uint16_t speed) {
+    left_thruster.writeMicroseconds(speed);
+    right_thruster.writeMicroseconds(speed);
+    front_right_thruster.writeMicroseconds(speed);
+    front_left_thruster.writeMicroseconds(speed);
+    back_left_thruster.writeMicroseconds(speed);
+    back_right_thruster.writeMicroseconds(speed);
+}
+
+
 void ThrusterController::SlowMotorSpin() {
-    left_thruster.writeMicroseconds(1600);
-    right_thruster.writeMicroseconds(1600);
-    front_right_thruster.writeMicroseconds(1600);
-    front_left_thruster.writeMicroseconds(1600);
-    back_left_thruster.writeMicroseconds(1600);
-    back_right_thruster.writeMicroseconds(1600);
+    SetThrusterSpeed(SLOW_SPEED);
 }
 
 int ThrusterController::GetTaskMS() {
