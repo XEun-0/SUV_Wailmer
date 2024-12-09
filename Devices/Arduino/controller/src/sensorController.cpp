@@ -9,6 +9,9 @@ int SensorController::InitializeSensors() {
     memset(&sensor_info, 0, SENSOR_BUFFER_SIZE);
     int baroStatus =      InitializeBarometer();
     int imuStatus =       InitializeIMU();
+
+    // Set validation boolean
+    isValBitSet = false;
 }
 
 int SensorController::Run(TaskParams_t* params) { 
@@ -47,27 +50,36 @@ int SensorController::Run(TaskParams_t* params) {
     //Serial.println("Hello");
 
 #endif
-    
     if (params->msgSemaphore != NULL) {
-        Serial.println("Semaphore exists.");
-        params->statusMsg->SetSensorOutInfo(sensor_info);
-        // Print the buffer
-        for (int i = 0; i < 32; i++) {
-            Serial.print(sensorBuffer[i], HEX); // Print as hexadecimal
-            Serial.print(",");
+        if (xSemaphoreTake(params->msgSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
+            Serial.println("Sensor Controller has taken semaphore.");
+            params->statusMsg->SetSensorOutInfo(sensor_info);
+            // if ((params->statusMsg->GetValidationByte() & (1 << 7)) == 0b10000000) {
+            //     Serial.println("Sensor msg stored.");
+            //     isValBitSet = true;
+            // }
+            
+            // Debug information
+            // Print the buffer
+            for (int i = 0; i < 32; i++) {
+                Serial.print(sensorBuffer[i], HEX); // Print as hexadecimal
+                Serial.print(",");
+            }
+            Serial.println("\n");
+            for (int i = 0; i < 32; i++) {
+                Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
+                Serial.print(",");
+            }
+            Serial.println(params->statusMsg->GetSensorOutInfo(32), HEX);
+            Serial.println("\n");
+
+            xSemaphoreGive(params->msgSemaphore);
         }
-        Serial.println("\n");
-        for (int i = 0; i < 32; i++) {
-            Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
-            Serial.print(",");
-        }
-        Serial.println("\n");
+        
     } else {
         Serial.println("Semaphore does not exist.");
     }
-    // set sensor data
-    // motor task gives up semaphore, sensor takes and give up semaphore, aggregator 
-    // takes semaphore and sends it out. 
+
 }
 
 // Turns Barometer data collecting on

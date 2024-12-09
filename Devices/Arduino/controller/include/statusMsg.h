@@ -6,7 +6,9 @@
 
 #include "Common/commonTypes.h"
 
-#define OUT_BUFFER_SIZE 32
+#define SET_STATUS_BYTE         1
+#define SENSOR_BUFFER_SIZE      32
+#define OUT_BUFFER_SIZE         SENSOR_BUFFER_SIZE + SET_STATUS_BYTE
 
 class StatusMsg {
 public:

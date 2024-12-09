@@ -41,4 +41,6 @@ Line-ending issues:
 delete ROS_ws\(build, install, log)
 
 // Platformio
+pio run
+pio run --target upload
 platformio device monitor

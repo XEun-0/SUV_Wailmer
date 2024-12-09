@@ -40,6 +40,8 @@ private:
     uint8_t sensorBuffer[SENSOR_BUFFER_SIZE];
     int InitializeBarometer();        
     int InitializeIMU();
+
+    bool isValBitSet;
 };
 
 #endif // SENSORCONTROLLER_H

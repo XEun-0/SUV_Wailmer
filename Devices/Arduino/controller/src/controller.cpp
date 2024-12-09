@@ -24,7 +24,7 @@ void SerialMsgTask(void *pvParams) {
 void ThrusterCommandsTask(void *pvParams) {
     while (1) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
-        thrusters->Run();
+        thrusters->Run(params);
 
         vTaskDelay( thrusters->GetTaskMS() / portTICK_PERIOD_MS);
     }
@@ -66,7 +66,7 @@ void setup() {
         SerialMsgTask,                              // Function to be called
         "SerialMsgTask",                            // Name of the task
         512,                                        // Stack size
-        &taskParameters,                       // Parameters passed to task
+        &taskParameters,                            // Parameters passed to task
         2,                                          // Task priority (higher number = higher priority)
         &(serialHandler->SerialDataHandlerTaskHandle) // Task handle for reference
     );
@@ -76,7 +76,7 @@ void setup() {
         AggregateSensorsTask,                       // Function to be called
         "AggregateSensorsTask",                     // Name of the task
         512,                                        // Stack size
-        &taskParameters,                       // Parameters passed to task
+        &taskParameters,                            // Parameters passed to task
         3,                                          // Task priority (higher number = higher priority)
         &(sensors->AggregateSensorsTaskHandle)      // Task handle for reference
     );
@@ -86,7 +86,7 @@ void setup() {
         ThrusterCommandsTask,                       // Function to be called
         "MotorCommandsTask",                        // Name of the task
         512,                                        // Stack size
-        &taskParameters,                       // Parameters passed to task
+        &taskParameters,                            // Parameters passed to task
         1,                                          // Task priority
         &(thrusters->ThrusterCommandsTaskHandle)    // Task handle for reference
     );

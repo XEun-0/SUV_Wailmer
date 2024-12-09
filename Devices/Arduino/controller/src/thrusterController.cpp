@@ -8,7 +8,7 @@ int ThrusterController::InitializeThrusters() {
     return 0;
 }
 
-int ThrusterController::Run() { 
+int ThrusterController::Run(TaskParams_t* params) { 
     // // Thruster Controller State
     // enum ThrusterControllerState {
     //   THRUSTER_INIT,
@@ -17,8 +17,24 @@ int ThrusterController::Run() {
     //   THRUSTER_GO,
     //   THRUSTER_NOGO
     // };
+    Serial.println("Thruster task hit");
+    if (params->msgSemaphore != NULL) {
+        if (xSemaphoreTake(params->msgSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
+            Serial.println("Thruster has semaphore");
+            vTaskDelay(pdMS_TO_TICKS(50)); 
+            xSemaphoreGive(params->msgSemaphore);
+            // params->msgSemaphore
+        } else {
+            Serial.println("Thruster could not acquire semaphore");
+        }
+    } else {
+        Serial.println("Thruster does not have semaphore");
+    }
+
     switch (thrusterCommState) {
     case THRUSTER_INIT:
+        Serial.println("THRUSTER_INIT");
+
         // BlueRobotics suggest waiting 7 seconds.
         InitializeControls();
         
@@ -30,6 +46,8 @@ int ThrusterController::Run() {
         thrusterCommState = THRUSTER_ARM;
         break;
     case THRUSTER_ARM:
+        Serial.println("THRUSTER_ARM");
+        
         // Thruster testing and thruster arm can probably be in the 
         // same state. SUV-19
         
@@ -38,8 +56,12 @@ int ThrusterController::Run() {
         
         // 50 * 100 = 5 Seconds
         vTaskDelay((THRUSTER_TASK_MS  * 50) / portTICK_PERIOD_MS);
+        // Go to THRUSTER_GO state after arming the thrusters.
+        // thruster testing state implemented later. 
+        thrusterCommState = THRUSTER_GO;
         break;
     case THRUSTER_TESTING:
+        Serial.println("THRUSTER_TESTING");
         // Sends a command to 1 motor at a time to spin for 2 seconds
         // and then stop, and then move to the next motor. 
 
@@ -48,6 +70,7 @@ int ThrusterController::Run() {
         vTaskDelay(THRUSTER_TASK_MS / portTICK_PERIOD_MS);
         break;
     case THRUSTER_GO:
+        Serial.println("THRUSTER_GO");
         // Construct thruster buffer to send
 
         // receive a command [ go down ]

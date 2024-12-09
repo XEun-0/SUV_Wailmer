@@ -19,14 +19,23 @@ void StatusMsg::SetSensorOutInfo(SensorInfo sInfo) {
 
     // bytes 28-29 = 1 byte
     memcpy(&outBuffer[28], &sInfo.imuTemp, sizeof(sInfo.imuTemp));
+
+    // Validation bit in the 33th byte
+    // 0000 0000, first bit is Sensor, second bit is Thruster
+    // 1100 0000
+    uint8_t vByte = outBuffer[32];
+    memcpy(&outBuffer[32], &(vByte |= 0b10000000), sizeof(vByte));
 }
+
+// Check validation bit
+// outBuffer[32] & (1 << 8);
 
 uint32_t StatusMsg::GetSensorOutInfo(uint8_t i) {
     return outBuffer[i];
 }
 
 uint8_t StatusMsg::GetValidationByte() {
-    return validationByte;
+    return outBuffer[32];
 }
 
 void StatusMsg::SetValidationByte(uint8_t setByte) {

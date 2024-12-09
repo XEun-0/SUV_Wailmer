@@ -34,7 +34,7 @@ class ThrusterController {
 public:
     ThrusterController();
 
-    int Run();
+    int Run(TaskParams_t* params);
     int InitializeThrusters();
     int GetTaskMS();
 
