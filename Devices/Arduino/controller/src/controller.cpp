@@ -87,7 +87,7 @@ void setup() {
         "MotorCommandsTask",                        // Name of the task
         512,                                        // Stack size
         &taskParameters,                            // Parameters passed to task
-        1,                                          // Task priority
+        1,                                          // Task priority (higher number = higher priority)
         &(thrusters->ThrusterCommandsTaskHandle)    // Task handle for reference
     );
     
