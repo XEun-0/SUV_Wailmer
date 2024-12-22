@@ -1,7 +1,7 @@
 #ifndef SENSORCONTROLLER_H
 #define SENSORCONTROLLER_H
 
-#include <Wire.h>
+
 #include "MS5837.h"
 #include <Adafruit_BNO055.h>
 #include "statusMsg.h"

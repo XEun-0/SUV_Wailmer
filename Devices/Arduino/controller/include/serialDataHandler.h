@@ -1,20 +1,17 @@
 #ifndef SERIALDATAHANDLER_H
 #define SERIALDATAHANDLER_H
 
-#include <Wire.h>
-#include "MS5837.h"
-#include <Adafruit_BNO055.h>
-#include <Arduino_FreeRTOS.h>
-#include <Servo.h>
-#include <semphr.h>
+#include "statusMsg.h"
+#include "Arduino.h"
+#include "Common/commonTypes.h"
 
-#define SERIAL_TASK_MS 100;
+#define SERIAL_TASK_MS  100
 
 class SerialDataHandler {
 public:
     SerialDataHandler();
 
-    int Run();
+    int Run(TaskParams_t* params);
     int InitializeSerialDataHandler();
     int GetTaskMS();
 

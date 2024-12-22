@@ -50,9 +50,10 @@ int SensorController::Run(TaskParams_t* params) {
     //Serial.println("Hello");
 
 #endif
-    if (params->msgSemaphore != NULL) {
-        if (xSemaphoreTake(params->msgSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
-            Serial.println("Sensor Controller has taken semaphore.");
+    if (params->snsrSemaphore != NULL) {
+        // if (!params->statusMsg->GetIsSensorPopulated()) {
+        if (xSemaphoreTake(params->snsrSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
+            Serial.println("[Sensor] has taken semaphore.");
             params->statusMsg->SetSensorOutInfo(sensor_info);
             // if ((params->statusMsg->GetValidationByte() & (1 << 7)) == 0b10000000) {
             //     Serial.println("Sensor msg stored.");
@@ -73,13 +74,17 @@ int SensorController::Run(TaskParams_t* params) {
             Serial.println(params->statusMsg->GetSensorOutInfo(32), HEX);
             Serial.println("\n");
 
-            xSemaphoreGive(params->msgSemaphore);
+            params->statusMsg->SetIsSensorPopulated(true);
+            xSemaphoreGive(params->snsrSemaphore);
+        } else {
+            Serial.println("[Sensor] could not take semaphore.");
         }
+        // }
+        
         
     } else {
-        Serial.println("Semaphore does not exist.");
+        Serial.println("[Sensor] Semaphore does not exist.");
     }
-
 }
 
 // Turns Barometer data collecting on

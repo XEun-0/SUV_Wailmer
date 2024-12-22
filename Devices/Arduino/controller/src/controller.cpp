@@ -15,9 +15,9 @@ SerialDataHandler   *serialHandler;
 void SerialMsgTask(void *pvParams) {
     while (1) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
-        serialHandler->Run();
+        serialHandler->Run(params);
 
-        vTaskDelay( thrusters->GetTaskMS() / portTICK_PERIOD_MS);
+        vTaskDelay( serialHandler->GetTaskMS() / portTICK_PERIOD_MS);
     }
 }
 
@@ -35,7 +35,7 @@ void AggregateSensorsTask(void *pvParams) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
         //params->statusMsg->SetValidationByte(4);
         sensors->Run(params);
-
+        // Check if sensors have run
         vTaskDelay( sensors->GetTaskMS() / portTICK_PERIOD_MS);
     }
 }
@@ -52,14 +52,12 @@ void setup() {
     thrusters->InitializeThrusters();
     serialHandler->InitializeSerialDataHandler();
 
-    // mutex semaphore starts as given
-    // Feature	                xSemaphoreCreateMutex	        xSemaphoreCreateBinary
-    // Purpose	                Mutual exclusion	            Event signaling
-    // Priority Inheritance	    Yes	                            No
-    // Initial State	        Given	                        Taken
-    // Best Use Case	        Protecting shared resources	    Task signaling or event handling
     StatusMsg* statusMsg = new StatusMsg();
-    TaskParams_t taskParameters = {xSemaphoreCreateMutex(), statusMsg};
+    
+    // Create TaskParams type with counting semaphore and statusMsg
+    TaskParams_t taskParameters = { xSemaphoreCreateMutex(), // snsrSemaphore
+                                    xSemaphoreCreateMutex(), // thrsSemaphore
+                                    statusMsg};
 
     // Create Serial data handling task. 
     xTaskCreate(

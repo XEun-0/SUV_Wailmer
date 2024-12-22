@@ -1,9 +1,10 @@
 #ifndef COMMONSTRUCTS_H
 #define COMMONSTRUCTS_H
 
-#include <stdint.h>
-#include <Arduino_FreeRTOS.h>
-#include <semphr.h>
+#include <Wire.h>               // Arduino class
+#include <stdint.h>             
+#include <Arduino_FreeRTOS.h>   // Arduino FreeRTOS class
+#include <semphr.h>             // semaphore class
 
 // Forward declaration for StatusMsg class
 class StatusMsg;
@@ -13,7 +14,8 @@ class StatusMsg;
  * Parameter struct for each task variable sharing.
  */
 typedef struct {
-  SemaphoreHandle_t   msgSemaphore;
+  SemaphoreHandle_t   snsrSemaphore;
+  SemaphoreHandle_t   thrsSemaphore;
   StatusMsg*          statusMsg;
 } TaskParams_t;
 

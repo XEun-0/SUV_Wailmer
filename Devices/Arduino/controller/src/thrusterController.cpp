@@ -18,18 +18,7 @@ int ThrusterController::Run(TaskParams_t* params) {
     //   THRUSTER_NOGO
     // };
     Serial.println("Thruster task hit");
-    if (params->msgSemaphore != NULL) {
-        if (xSemaphoreTake(params->msgSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
-            Serial.println("Thruster has semaphore");
-            vTaskDelay(pdMS_TO_TICKS(50)); 
-            xSemaphoreGive(params->msgSemaphore);
-            // params->msgSemaphore
-        } else {
-            Serial.println("Thruster could not acquire semaphore");
-        }
-    } else {
-        Serial.println("Thruster does not have semaphore");
-    }
+    
 
     switch (thrusterCommState) {
     case THRUSTER_INIT:
@@ -72,7 +61,23 @@ int ThrusterController::Run(TaskParams_t* params) {
     case THRUSTER_GO:
         Serial.println("THRUSTER_GO");
         // Construct thruster buffer to send
+        if (params->thrsSemaphore != NULL) {
+            // if (!params->statusMsg->GetIsThrusterPopulated()) {
+            if (xSemaphoreTake(params->thrsSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
+                Serial.println("[Thruster] has semaphore");
+                
+                vTaskDelay(pdMS_TO_TICKS(50)); 
 
+                params->statusMsg->SetIsThrusterPopulated(true);
+                xSemaphoreGive(params->thrsSemaphore);
+            } else {
+                Serial.println("[Thruster] could not acquire semaphore.");
+            }
+            // }
+            
+        } else {
+            Serial.println("[Thruster] Semaphore does not exist.");
+        }
         // receive a command [ go down ]
 
         // commmand -> send the values of the command to my motors
@@ -93,6 +98,7 @@ int ThrusterController::InitializeControls() {
     back_right_thruster.attach(BACK_RIGHT_THRUSTER_PIN);
 
     // Send stop command to thrusters
+    left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_right_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);
     front_left_thruster.writeMicroseconds(MOTOR_STOP_COMMAND);

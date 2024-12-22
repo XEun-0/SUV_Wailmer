@@ -42,3 +42,19 @@ void StatusMsg::SetValidationByte(uint8_t setByte) {
     validationByte = setByte;
 }
 
+void StatusMsg::SetIsSensorPopulated(bool val) {
+    isSensorPopulated = val;
+}
+
+void StatusMsg::SetIsThrusterPopulated(bool val) {
+    isThrusterPopulated = val;
+}
+
+bool StatusMsg::GetIsSensorPopulated() {
+    return isSensorPopulated;
+}
+
+bool StatusMsg::GetIsThrusterPopulated() {
+    return isThrusterPopulated;
+}
+

@@ -20,12 +20,23 @@ public:
     uint32_t GetSensorOutInfo(uint8_t i);
 
     void SetThrusterOutInfo(ThrusterInfo tInfo);
+    // uint32_t GetSensorOutInfo(uint8_t i);
+
     void SetSensorValidation();
     void SetThrusterValidation();
+
+    void SetIsSensorPopulated(bool val);
+    void SetIsThrusterPopulated(bool val);
+    bool GetIsSensorPopulated();
+    bool GetIsThrusterPopulated();
+    
     
 private:
     uint8_t validationByte;
     uint8_t outBuffer[OUT_BUFFER_SIZE];
+
+    bool isSensorPopulated = false;
+    bool isThrusterPopulated = false;
 };
 
 #endif //STATUSMSG_H
