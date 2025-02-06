@@ -4,28 +4,73 @@ SerialDataHandler::SerialDataHandler() {}
 
 // SUV-20 Serial msg aggregation tasking story
 int SerialDataHandler::InitializeSerialDataHandler() {
-
+    
 }
 
 int SerialDataHandler::Run(TaskParams_t* params) { 
-    
-    if (params->snsrSemaphore != NULL && params->thrsSemaphore != NULL) {
-        if (xSemaphoreTake(params->snsrSemaphore, pdMS_TO_TICKS(100)) == pdTRUE
-            && xSemaphoreTake(params->thrsSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
+
+    if (params->xSerialEventGroup != NULL) {
+        
+        if ((xEventGroupGetBits(params->xSerialEventGroup) & (SENSOR_TASK_DONE | THRUSTER_TASK_DONE)) == (SENSOR_TASK_DONE | THRUSTER_TASK_DONE)) {
+           
+            #ifdef SERIAL_OUT
             Serial.println("[Serial Data Handler] has both semaphores.");
+            #endif
+
             // Some task for 1 second
             vTaskDelay(50);
-
-            xSemaphoreGive(params->snsrSemaphore); 
-            xSemaphoreGive(params->thrsSemaphore); 
+            #ifdef SERIAL_OUT
+            Serial.println("[Serial Data Handler] inside run");
+            Serial.print("sizeof(ThrusterInfo): ");
+            Serial.println(sizeof(ThrusterInfo));
+            Serial.print("sizeof(ThrusterSpeedsType): ");
+            Serial.println(sizeof(ThrusterSpeedsType));
+            Serial.print("sizeof(SensorInfo): ");
+            Serial.println(sizeof(SensorInfo));
+            Serial.println("[Serial Data Handler] params->statusMsg :");
+            // for (int i = 0; i < OUT_BUFFER_SIZE; i++) {
+            //     Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
+            //     Serial.print(",");
+            // }
+            hexDump(params->statusMsg->GetOutBufferPointer(), OUT_BUFFER_SIZE);
+            //Serial.println(params->statusMsg->GetSensorOutInfo(32), HEX);
+            Serial.println("\n\n");
+            #endif
+            
+            xEventGroupClearBits(params->xSerialEventGroup, SENSOR_TASK_DONE | THRUSTER_TASK_DONE);
+            
         } else {
+            #ifdef SERIAL_OUT
             Serial.println("[Serial Data Handler] could not acquire semaphore.");
+            #endif
         }
+
     } else {
+        #ifdef SERIAL_OUT
         Serial.println("[Serial Data Handler] Semaphore does not exist.");
+        #else
+        // Serial.write(ERROR_CODE_NO_SEMAPHORE);
+        #endif
     }
+
 }
 
 int SerialDataHandler::GetTaskMS() {
     return SERIAL_TASK_MS;
+}
+
+TaskHandle_t* SerialDataHandler::GetTaskHandle() {
+    return &SerialDataHandlerTaskHandle;
+}
+
+void SerialDataHandler::hexDump(uint8_t *data, int length) {
+    uint8_t *c = data;
+    int s;
+
+    for(s = 0; s < length; s++) {
+        Serial.print(*c++, HEX);
+        Serial.print(" ");
+    }
+
+    Serial.print("\n");
 }

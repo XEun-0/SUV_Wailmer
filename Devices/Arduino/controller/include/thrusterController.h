@@ -50,10 +50,12 @@ private:
     ThrusterControllerState thrusterCommState;
     uint8_t thrusterCommandsBuffer[THRUSTER_COMMAND_BUFFER_SIZE];
     ThrusterInfo thruster_info;
+    ThrusterSpeedsType thrusterSpeedsType;
 
     int InitializeControls();
     void SlowMotorSpin();
-    void SetThrusterSpeed(uint16_t speed);
+    void SetThrusterSpeed(ThrusterSpeedsType spds);
+    void SetSingleThrusterSpeed(Servo *thruster, uint16_t speed);
 };
 
 #endif // THRUSTERCONTROLLER_H

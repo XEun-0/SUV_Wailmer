@@ -8,7 +8,8 @@
 
 #define SET_STATUS_BYTE         1
 #define SENSOR_BUFFER_SIZE      32
-#define OUT_BUFFER_SIZE         SENSOR_BUFFER_SIZE + SET_STATUS_BYTE
+#define THRUSTER_BUFFER_SIZE    16
+#define OUT_BUFFER_SIZE         SENSOR_BUFFER_SIZE + THRUSTER_BUFFER_SIZE
 
 class StatusMsg {
 public:
@@ -19,7 +20,7 @@ public:
     void SetSensorOutInfo(SensorInfo sInfo);
     uint32_t GetSensorOutInfo(uint8_t i);
 
-    void SetThrusterOutInfo(ThrusterInfo tInfo);
+    void SetThrusterOutInfo(ThrusterInfo *tInfo);
     // uint32_t GetSensorOutInfo(uint8_t i);
 
     void SetSensorValidation();
@@ -30,7 +31,7 @@ public:
     bool GetIsSensorPopulated();
     bool GetIsThrusterPopulated();
     
-    
+    uint8_t* GetOutBufferPointer();
 private:
     uint8_t validationByte;
     uint8_t outBuffer[OUT_BUFFER_SIZE];

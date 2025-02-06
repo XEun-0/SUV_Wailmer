@@ -14,7 +14,7 @@ int SensorController::InitializeSensors() {
     isValBitSet = false;
 }
 
-int SensorController::Run(TaskParams_t* params) { 
+int SensorController::Run(TaskParams_t* params) {
     sensor.read();
 
     // IMU get new sensor event
@@ -44,46 +44,54 @@ int SensorController::Run(TaskParams_t* params) {
     // bytes 28-29 = 1 byte
     memcpy(&sensorBuffer[28], &sensor_info.imuTemp, sizeof(sensor_info.imuTemp));
 
-#if DEBUG_SERIAL != 1
-    Serial.write((uint8_t*)&sensorBuffer, SENSOR_BUFFER_SIZE);
-#else
-    //Serial.println("Hello");
+// #ifndef SERIAL_OUTPUT
+//     Serial.write((uint8_t*)&sensorBuffer, SENSOR_BUFFER_SIZE);
+// #else
 
-#endif
-    if (params->snsrSemaphore != NULL) {
-        // if (!params->statusMsg->GetIsSensorPopulated()) {
-        if (xSemaphoreTake(params->snsrSemaphore, pdMS_TO_TICKS(100)) == pdTRUE) {
-            Serial.println("[Sensor] has taken semaphore.");
-            params->statusMsg->SetSensorOutInfo(sensor_info);
-            // if ((params->statusMsg->GetValidationByte() & (1 << 7)) == 0b10000000) {
-            //     Serial.println("Sensor msg stored.");
-            //     isValBitSet = true;
-            // }
+// #endif
+    if (params->xSerialMutex != NULL) {
+        if (xSemaphoreTake(params->xSerialMutex, pdMS_TO_TICKS(100)) == pdTRUE) {
+            #ifdef SERIAL_OUT
+                Serial.println("[Sensor] has taken semaphore.");
+            #endif
             
+            params->statusMsg->SetSensorOutInfo(sensor_info);
+
             // Debug information
             // Print the buffer
-            for (int i = 0; i < 32; i++) {
-                Serial.print(sensorBuffer[i], HEX); // Print as hexadecimal
-                Serial.print(",");
-            }
-            Serial.println("\n");
-            for (int i = 0; i < 32; i++) {
-                Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
-                Serial.print(",");
-            }
-            Serial.println(params->statusMsg->GetSensorOutInfo(32), HEX);
-            Serial.println("\n");
+            #ifdef SERIAL_OUT
+                Serial.print("[Sensor] Local :");
+                for (int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
+                    Serial.print(sensorBuffer[i], HEX); // Print as hexadecimal
+                    Serial.print(",");
+                }
+                Serial.println("\n");
+
+                Serial.print("[Sensor] params->statusMsg :");
+                for (int i = 0; i < SENSOR_BUFFER_SIZE; i++) {
+                    Serial.print(params->statusMsg->GetSensorOutInfo(i), HEX); // Print as hexadecimal
+                    Serial.print(",");
+                }
+                Serial.println(params->statusMsg->GetSensorOutInfo(32), HEX);
+                Serial.println("\n");
+            #endif
 
             params->statusMsg->SetIsSensorPopulated(true);
-            xSemaphoreGive(params->snsrSemaphore);
+            
+            xEventGroupSetBits(params->xSerialEventGroup, SENSOR_TASK_DONE);
+
+            xSemaphoreGive(params->xSerialMutex);
+
         } else {
-            Serial.println("[Sensor] could not take semaphore.");
+            #ifdef SERIAL_OUT
+                Serial.println("[Sensor] could not take semaphore.");
+            #endif
         }
-        // }
-        
-        
+
     } else {
-        Serial.println("[Sensor] Semaphore does not exist.");
+        #ifdef SERIAL_OUT
+            Serial.println("[Sensor] Semaphore does not exist.");
+        #endif
     }
 }
 

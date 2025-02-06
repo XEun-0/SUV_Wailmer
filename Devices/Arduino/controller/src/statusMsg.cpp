@@ -1,5 +1,8 @@
 #include "statusMsg.h"
+#include "Arduino.h"
 
+#define SENSOR_INFO_INDEX            0
+#define THRUSTER_INFO_INDEX         32
 
 StatusMsg::StatusMsg() {
     validationByte = 1;
@@ -19,16 +22,27 @@ void StatusMsg::SetSensorOutInfo(SensorInfo sInfo) {
 
     // bytes 28-29 = 1 byte
     memcpy(&outBuffer[28], &sInfo.imuTemp, sizeof(sInfo.imuTemp));
-
-    // Validation bit in the 33th byte
-    // 0000 0000, first bit is Sensor, second bit is Thruster
-    // 1100 0000
-    uint8_t vByte = outBuffer[32];
-    memcpy(&outBuffer[32], &(vByte |= 0b10000000), sizeof(vByte));
 }
 
-// Check validation bit
-// outBuffer[32] & (1 << 8);
+void StatusMsg::SetThrusterOutInfo(ThrusterInfo *tInfo) {
+    memcpy((void *)&outBuffer[THRUSTER_INFO_INDEX],  tInfo,  sizeof(ThrusterInfo));
+
+    #ifdef SERIAL_OUT
+    uint8_t *c = (uint8_t *)tInfo;
+    int s;
+        Serial.println("inside setThrusterOutInfo: ");
+        for(s = 0; s < sizeof(ThrusterInfo); s++) {
+            Serial.print(*c++, HEX);
+            Serial.print(" ");
+        }
+
+        Serial.print("\n");
+    #endif
+}
+
+uint8_t* StatusMsg::GetOutBufferPointer() {
+    return outBuffer;
+}
 
 uint32_t StatusMsg::GetSensorOutInfo(uint8_t i) {
     return outBuffer[i];

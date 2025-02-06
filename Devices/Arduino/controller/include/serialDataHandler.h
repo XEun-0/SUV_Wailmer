@@ -11,22 +11,41 @@ class SerialDataHandler {
 public:
     SerialDataHandler();
 
+    /*********************************************************
+     * 
+     * Name:  Run
+     * Notes: n/a
+     * 
+     *********************************************************/
     int Run(TaskParams_t* params);
+
+    /*********************************************************
+     * 
+     * Name:  InitializeSerialDataHandler
+     * Notes: n/a
+     * 
+     *********************************************************/
     int InitializeSerialDataHandler();
+
+    /*********************************************************
+     * 
+     * Name:  GetTaskMS
+     * Notes: n/a
+     * 
+     *********************************************************/
     int GetTaskMS();
 
-    // // Thruster Controller State
-    // enum SerialDataHandlerState {
-    //     THRUSTER_INIT,
-    //     THRUSTER_ARM,
-    //     THRUSTER_TESTING,
-    //     THRUSTER_GO,
-    //     THRUSTER_NOGO
-    // };
-    
+    /*********************************************************
+     * 
+     * Name:  GetTaskHandle
+     * Notes: n/a
+     * 
+     *********************************************************/
+    TaskHandle_t* GetTaskHandle();
+
     TaskHandle_t SerialDataHandlerTaskHandle;
 private:
-
+    void hexDump(uint8_t *data, int length);
     // SerialDataHandlerState thrusterCommState;
     // uint8_t thrusterCommandsBuffer[THRUSTER_COMMAND_BUFFER_SIZE];
 

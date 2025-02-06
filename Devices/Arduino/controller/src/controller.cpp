@@ -55,10 +55,12 @@ void setup() {
     StatusMsg* statusMsg = new StatusMsg();
     
     // Create TaskParams type with counting semaphore and statusMsg
-    TaskParams_t taskParameters = { xSemaphoreCreateMutex(), // snsrSemaphore
-                                    xSemaphoreCreateMutex(), // thrsSemaphore
-                                    statusMsg};
-
+    TaskParams_t taskParameters = { 
+                                    xSemaphoreCreateMutex(),    // xSerialMutex
+                                    xEventGroupCreate(),        // xSerialEventGroup
+                                    statusMsg
+                                  };
+    
     // Create Serial data handling task. 
     xTaskCreate(
         SerialMsgTask,                              // Function to be called
@@ -66,7 +68,7 @@ void setup() {
         512,                                        // Stack size
         &taskParameters,                            // Parameters passed to task
         2,                                          // Task priority (higher number = higher priority)
-        &(serialHandler->SerialDataHandlerTaskHandle) // Task handle for reference
+        serialHandler->GetTaskHandle() // Task handle for reference
     );
 
     // Create Sensor Aggregation Task
