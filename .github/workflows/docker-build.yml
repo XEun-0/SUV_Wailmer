@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Container/ROS2-Test/
-          file: ./Dockerfile
+          file: ./Container/ROS2-Test/Dockerfile
           push: true
           tags: ros2-test:latest
           build-args: |
