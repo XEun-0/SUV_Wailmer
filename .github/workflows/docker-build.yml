@@ -37,7 +37,7 @@ jobs:
           context: .
           file: ./Container/ROS2-Test/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/ros2-test:latest
+          tags: ghcr.io/${{ github.repository_owner | lower }}/ros2-test:latest
           build-args: |
             BASE_IMAGE=ros
             ROS_DISTRO=iron
