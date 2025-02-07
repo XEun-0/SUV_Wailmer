@@ -69,7 +69,7 @@ jobs:
           context: ./Container/ROS2-Test/
           file: ./Container/ROS2-Test/Dockerfile
           push: true
-          tags: ${{ steps.registry.outputs.username }}/ros2-test:latest
+          tags: ${{ env.REGISTRY }}/${{ steps.registry.outputs.username }}/ros2-test:latest
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_IMAGE=ros
