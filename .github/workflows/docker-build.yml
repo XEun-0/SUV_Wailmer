@@ -44,7 +44,7 @@ jobs:
 
       - name: Get Registry
         id: registry
-        run: echo "username=$(echo '${{ env.actor }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        run: echo "username=$(echo '${{ github.actor }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
         
       - name: Extract metadata (tags, labels) for Docker
         id: meta
