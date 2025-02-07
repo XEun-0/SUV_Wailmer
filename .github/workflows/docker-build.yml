@@ -43,6 +43,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Registry
+        id: registry
+        run: echo "username=$(echo '${{ steps.registry.outputs.result }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -53,10 +57,7 @@ jobs:
         run: |
           echo "Tags: ${{ steps.meta.outputs.tags }}"
           echo "Labels: ${{ steps.meta.outputs.labels }}"
-          echo "Images: ${{ steps.meta.outputs.images }}"
-          echo "Repository: ${{ steps.meta.outputs.repository }}"
-          echo "Username: ${{ steps.meta.outputs.username }}"
-          echo "Digest: ${{ steps.meta.outputs.digest }}"
+          echo "username job: ${{ steps.registry.outputs.username }}"
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           LABELS: ${{ steps.meta.outputs.labels }}
