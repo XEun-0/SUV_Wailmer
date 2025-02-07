@@ -12,8 +12,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  #IMAGE_NAME: ${{ github.repository }} #temp comment
-  IMAGE_NAME: ROS2-Test
+  IMAGE_NAME: ${{ github.repository }} #temp comment
+  #IMAGE_NAME: ROS2-Test
 
 jobs:
   build-and-push-image:
@@ -48,6 +48,11 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Debugging actions
+        run: |
+          echo ${{ steps.meta.outputs.tags }}
+          echo ${{ steps.meta.outputs.labels }}
 
       - name: Build and Push Docker Image to GHCR
         uses: docker/build-push-action@v5
