@@ -13,31 +13,114 @@
 
 class StatusMsg {
 public:
+    // Constructor
     StatusMsg();
+    
+    /*********************************************************
+     * 
+     * Name:  GetValidationByte
+     * Notes: n/a
+     * 
+     *********************************************************/
     uint8_t GetValidationByte();
+    
+    /*********************************************************
+     * 
+     * Name:  SetValidationByte
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetValidationByte(uint8_t setByte);
 
+    /*********************************************************
+     * 
+     * Name:  SetSensorOutInfo
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetSensorOutInfo(SensorInfo sInfo);
+    
+    /*********************************************************
+     * 
+     * Name:  GetSensorOutInfo
+     * Notes: n/a
+     * 
+     *********************************************************/
     uint32_t GetSensorOutInfo(uint8_t i);
 
+    /*********************************************************
+     * 
+     * Name:  GetSensorOutInfo
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetThrusterOutInfo(ThrusterInfo *tInfo);
     // uint32_t GetSensorOutInfo(uint8_t i);
 
+    /*********************************************************
+     * 
+     * Name:  SetSensorValidation
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetSensorValidation();
+    
+    /*********************************************************
+     * 
+     * Name:  SetThrusterValidation
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetThrusterValidation();
 
+    /*********************************************************
+     * 
+     * Name:  SetIsSensorPopulated
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetIsSensorPopulated(bool val);
+    
+    /*********************************************************
+     * 
+     * Name:  SetIsThrusterPopulated
+     * Notes: n/a
+     * 
+     *********************************************************/
     void SetIsThrusterPopulated(bool val);
+    
+    /*********************************************************
+     * 
+     * Name:  GetIsSensorPopulated
+     * Notes: n/a
+     * 
+     *********************************************************/
     bool GetIsSensorPopulated();
+    
+    /*********************************************************
+     * 
+     * Name:  GetIsThrusterPopulated
+     * Notes: n/a
+     * 
+     *********************************************************/
     bool GetIsThrusterPopulated();
     
+    /*********************************************************
+     * 
+     * Name:  GetOutBufferPointer
+     * Notes: n/a
+     * 
+     *********************************************************/
     uint8_t* GetOutBufferPointer();
+
 private:
+    
     uint8_t validationByte;
     uint8_t outBuffer[OUT_BUFFER_SIZE];
 
     bool isSensorPopulated = false;
     bool isThrusterPopulated = false;
+
 };
 
 #endif //STATUSMSG_H

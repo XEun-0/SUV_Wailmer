@@ -1,12 +1,29 @@
 #include "serialDataHandler.h"
 
+/*********************************************************
+ * 
+ * Name:  SerialDataHandler Constructor
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 SerialDataHandler::SerialDataHandler() {}
 
-// SUV-20 Serial msg aggregation tasking story
+/*********************************************************
+ * 
+ * Name:  InitializeSerialDataHandler
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 int SerialDataHandler::InitializeSerialDataHandler() {
-    
+    // SUV-20 Serial msg aggregation tasking story
 }
 
+/*********************************************************
+ * 
+ * Name:  Run
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 int SerialDataHandler::Run(TaskParams_t* params) { 
 
     if (params->xSerialEventGroup != NULL) {
@@ -55,14 +72,32 @@ int SerialDataHandler::Run(TaskParams_t* params) {
 
 }
 
+/*********************************************************
+ * 
+ * Name:  GetTaskMS
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 int SerialDataHandler::GetTaskMS() {
     return SERIAL_TASK_MS;
 }
 
+/*********************************************************
+ * 
+ * Name:  GetTaskHandle
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 TaskHandle_t* SerialDataHandler::GetTaskHandle() {
     return &SerialDataHandlerTaskHandle;
 }
 
+/*********************************************************
+ * 
+ * Name:  hexDump
+ * Notes: See serialDataHandler.h
+ * 
+ *********************************************************/
 void SerialDataHandler::hexDump(uint8_t *data, int length) {
     uint8_t *c = data;
     int s;

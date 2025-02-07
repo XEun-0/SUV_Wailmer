@@ -43,8 +43,9 @@ public:
      *********************************************************/
     TaskHandle_t* GetTaskHandle();
 
-    TaskHandle_t SerialDataHandlerTaskHandle;
+    
 private:
+    TaskHandle_t SerialDataHandlerTaskHandle;
     void hexDump(uint8_t *data, int length);
     // SerialDataHandlerState thrusterCommState;
     // uint8_t thrusterCommandsBuffer[THRUSTER_COMMAND_BUFFER_SIZE];

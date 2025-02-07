@@ -12,6 +12,12 @@ SensorController    *sensors;
 ThrusterController  *thrusters;
 SerialDataHandler   *serialHandler;
 
+/*********************************************************
+ * 
+ * Name:  SerialMsgTask
+ * Notes: n/a
+ * 
+ *********************************************************/
 void SerialMsgTask(void *pvParams) {
     while (1) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
@@ -21,6 +27,12 @@ void SerialMsgTask(void *pvParams) {
     }
 }
 
+/*********************************************************
+ * 
+ * Name:  ThrusterCommandsTask
+ * Notes: n/a
+ * 
+ *********************************************************/
 void ThrusterCommandsTask(void *pvParams) {
     while (1) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
@@ -30,6 +42,12 @@ void ThrusterCommandsTask(void *pvParams) {
     }
 }
 
+/*********************************************************
+ * 
+ * Name:  AggregateSensorsTask
+ * Notes: n/a
+ * 
+ *********************************************************/
 void AggregateSensorsTask(void *pvParams) {
     while (1) {
         TaskParams_t* params = (TaskParams_t*)pvParams;
@@ -40,7 +58,12 @@ void AggregateSensorsTask(void *pvParams) {
     }
 }
 
-// Setup, initialize
+/*********************************************************
+ * 
+ * Name:  setup
+ * Notes: n/a
+ * 
+ *********************************************************/
 void setup() {
     Serial.begin(115200);
 
@@ -95,5 +118,10 @@ void setup() {
     vTaskStartScheduler();
 }
 
-// RTOS removes loop functionality
+/*********************************************************
+ * 
+ * Name:  loop
+ * Notes: RTOS removes loop functionality
+ * 
+ *********************************************************/
 void loop() {}
