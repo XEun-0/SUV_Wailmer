@@ -51,15 +51,16 @@ jobs:
 
       - name: Debugging actions
         run: |
-          echo "Tags: $TAGS"
-          echo "Labels: $LABELS"
-          echo "Full Name: $FULL_NAME"
-          echo "Meta Output: $META_OUTPUT"
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo "Labels: ${{ steps.meta.outputs.labels }}"
+          echo "Images: ${{ steps.meta.outputs.images }}"
+          echo "Repository: ${{ steps.meta.outputs.repository }}"
+          echo "Username: ${{ steps.meta.outputs.username }}"
+          echo "Digest: ${{ steps.meta.outputs.digest }}"
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           LABELS: ${{ steps.meta.outputs.labels }}
           FULL_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          META_OUTPUT: ${{ steps.meta.outputs }}
 
       - name: Build and Push Docker Image to GHCR
         uses: docker/build-push-action@v5
