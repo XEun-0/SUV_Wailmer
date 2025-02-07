@@ -12,8 +12,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }} #temp comment
-  #IMAGE_NAME: ROS2-Test
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
@@ -69,7 +68,7 @@ jobs:
           context: ./Container/ROS2-Test/
           file: ./Container/ROS2-Test/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ steps.registry.outputs.username }}/ros2-test:latest
+          tags: ${{ env.REGISTRY }}/ros2-test:latest
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_IMAGE=ros
