@@ -9,6 +9,12 @@ StatusMsg::StatusMsg() {
     memset(outBuffer, 0, OUT_BUFFER_SIZE);
 }
 
+/*********************************************************
+ * 
+ * Name:  SetSensorOutInfo
+ * Notes: n/a
+ * 
+ *********************************************************/
 void StatusMsg::SetSensorOutInfo(SensorInfo sInfo) {
     // bytes 0-27 = 28 bytes
     memcpy(&outBuffer[0],  &sInfo.baroPressure,  sizeof(sInfo.baroPressure));
@@ -24,6 +30,12 @@ void StatusMsg::SetSensorOutInfo(SensorInfo sInfo) {
     memcpy(&outBuffer[28], &sInfo.imuTemp, sizeof(sInfo.imuTemp));
 }
 
+/*********************************************************
+ * 
+ * Name:  SetThrusterOutInfo
+ * Notes: n/a
+ * 
+ *********************************************************/
 void StatusMsg::SetThrusterOutInfo(ThrusterInfo *tInfo) {
     memcpy((void *)&outBuffer[THRUSTER_INFO_INDEX],  tInfo,  sizeof(ThrusterInfo));
 
@@ -40,6 +52,12 @@ void StatusMsg::SetThrusterOutInfo(ThrusterInfo *tInfo) {
     #endif
 }
 
+/*********************************************************
+ * 
+ * Name:  GetOutBufferPointer
+ * Notes: n/a
+ * 
+ *********************************************************/
 uint8_t* StatusMsg::GetOutBufferPointer() {
     return outBuffer;
 }

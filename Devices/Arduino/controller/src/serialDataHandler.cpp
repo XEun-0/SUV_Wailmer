@@ -15,7 +15,7 @@ SerialDataHandler::SerialDataHandler() {}
  * 
  *********************************************************/
 int SerialDataHandler::InitializeSerialDataHandler() {
-    // SUV-20 Serial msg aggregation tasking story
+    
 }
 
 /*********************************************************

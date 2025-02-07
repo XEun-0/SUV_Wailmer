@@ -2,12 +2,24 @@
 
 ThrusterController::ThrusterController() {}
 
+/*********************************************************
+ * 
+ * Name:  InitializeThrusters
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 int ThrusterController::InitializeThrusters() {
     thrusterCommState = THRUSTER_INIT;
     memset(&thruster_info, 0, THRUSTER_INFO_SIZE);
     return 0;
 }
 
+/*********************************************************
+ * 
+ * Name:  Run
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 int ThrusterController::Run(TaskParams_t* params) { 
     // // Thruster Controller State
     // enum ThrusterControllerState {
@@ -145,6 +157,12 @@ int ThrusterController::Run(TaskParams_t* params) {
     }
 }
 
+/*********************************************************
+ * 
+ * Name:  InitializeControls
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 int ThrusterController::InitializeControls() {
     // Assigned thruster hardware pins to servo objects
     left_thruster.attach(LEFT_THRUSTER_PIN);
@@ -165,6 +183,12 @@ int ThrusterController::InitializeControls() {
     return 0;
 }
 
+/*********************************************************
+ * 
+ * Name:  SetThrusterSpeed
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 void ThrusterController::SetThrusterSpeed(ThrusterSpeedsType spds) {
     left_thruster.writeMicroseconds(spds.left_thruster_speed);
     right_thruster.writeMicroseconds(spds.right_thruster_speed);
@@ -174,14 +198,42 @@ void ThrusterController::SetThrusterSpeed(ThrusterSpeedsType spds) {
     back_right_thruster.writeMicroseconds(spds.back_right_thruster_speed);
 }
 
+/*********************************************************
+ * 
+ * Name:  SetSingleThrusterSpeed
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 void ThrusterController::SetSingleThrusterSpeed(Servo *thruster, uint16_t speed) {
     thruster->writeMicroseconds(speed);
 }
 
+/*********************************************************
+ * 
+ * Name:  SlowMotorSpin
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 void ThrusterController::SlowMotorSpin() {
     //SetThrusterSpeed(SLOW_SPEED);
 }
 
+/*********************************************************
+ * 
+ * Name:  GetTaskMS
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
 int ThrusterController::GetTaskMS() {
     return THRUSTER_TASK_MS;
+}
+
+/*********************************************************
+ * 
+ * Name:  GetTaskHandle
+ * Notes: See thrusterController.h
+ * 
+ *********************************************************/
+TaskHandle_t* ThrusterController::GetTaskHandle() {
+    return &ThrusterCommandsTaskHandle;
 }

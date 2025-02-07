@@ -34,11 +34,38 @@ class ThrusterController {
 public:
     ThrusterController();
 
+    /*********************************************************
+     * 
+     * Name:  Run
+     * Notes: n/a
+     * 
+     *********************************************************/
     int Run(TaskParams_t* params);
+    
+    /*********************************************************
+     * 
+     * Name:  InitializeThrusters
+     * Notes: n/a
+     * 
+     *********************************************************/
     int InitializeThrusters();
+
+    /*********************************************************
+     * 
+     * Name:  GetTaskMS
+     * Notes: n/a
+     * 
+     *********************************************************/
     int GetTaskMS();
 
-    TaskHandle_t ThrusterCommandsTaskHandle;
+    /*********************************************************
+     * 
+     * Name:  GetTaskHandle
+     * Notes: n/a
+     * 
+     *********************************************************/
+    TaskHandle_t* GetTaskHandle();
+    
 private:
     Servo left_thruster;
     Servo right_thruster;
@@ -56,6 +83,8 @@ private:
     void SlowMotorSpin();
     void SetThrusterSpeed(ThrusterSpeedsType spds);
     void SetSingleThrusterSpeed(Servo *thruster, uint16_t speed);
+
+    TaskHandle_t ThrusterCommandsTaskHandle;
 };
 
 #endif // THRUSTERCONTROLLER_H

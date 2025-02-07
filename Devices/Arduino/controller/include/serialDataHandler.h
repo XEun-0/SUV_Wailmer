@@ -43,7 +43,6 @@ public:
      *********************************************************/
     TaskHandle_t* GetTaskHandle();
 
-    
 private:
     TaskHandle_t SerialDataHandlerTaskHandle;
     void hexDump(uint8_t *data, int length);

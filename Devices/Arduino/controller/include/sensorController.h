@@ -28,8 +28,28 @@ class SensorController {
 public:
     SensorController();
     
+    /*********************************************************
+     * 
+     * Name:  Run
+     * Notes: n/a
+     * 
+     *********************************************************/
     int Run(TaskParams_t* params);
+    
+    /*********************************************************
+     * 
+     * Name:  InitializeSensors
+     * Notes: n/a
+     * 
+     *********************************************************/
     int InitializeSensors();
+
+    /*********************************************************
+     * 
+     * Name:  GetTaskMS
+     * Notes: n/a
+     * 
+     *********************************************************/
     int GetTaskMS();
 
     TaskHandle_t AggregateSensorsTaskHandle;

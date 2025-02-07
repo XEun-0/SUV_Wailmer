@@ -12,6 +12,10 @@ SensorController    *sensors;
 ThrusterController  *thrusters;
 SerialDataHandler   *serialHandler;
 
+
+// try a different approach later on
+// where controller.cpp is probably the master controller and running a couple tasks
+// thrusterController, SensorController and SerialDataHandler
 /*********************************************************
  * 
  * Name:  SerialMsgTask
@@ -91,7 +95,7 @@ void setup() {
         512,                                        // Stack size
         &taskParameters,                            // Parameters passed to task
         2,                                          // Task priority (higher number = higher priority)
-        serialHandler->GetTaskHandle() // Task handle for reference
+        serialHandler->GetTaskHandle()              // Task handle for reference
     );
 
     // Create Sensor Aggregation Task
@@ -111,7 +115,7 @@ void setup() {
         512,                                        // Stack size
         &taskParameters,                            // Parameters passed to task
         1,                                          // Task priority (higher number = higher priority)
-        &(thrusters->ThrusterCommandsTaskHandle)    // Task handle for reference
+        thrusters->GetTaskHandle()                  // Task handle for reference
     );
     
     // Start the scheduler
