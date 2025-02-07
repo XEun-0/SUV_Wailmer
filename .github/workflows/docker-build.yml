@@ -54,10 +54,12 @@ jobs:
           echo "Tags: $TAGS"
           echo "Labels: $LABELS"
           echo "Full Name: $FULL_NAME"
+          echo "Meta Output: $META_OUTPUT"
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           LABELS: ${{ steps.meta.outputs.labels }}
           FULL_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          META_OUTPUT: ${{ steps.meta.outputs }}
 
       - name: Build and Push Docker Image to GHCR
         uses: docker/build-push-action@v5
