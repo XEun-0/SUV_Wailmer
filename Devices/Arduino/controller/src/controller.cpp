@@ -12,10 +12,6 @@ SensorController    *sensors;
 ThrusterController  *thrusters;
 SerialDataHandler   *serialHandler;
 
-
-// try a different approach later on
-// where controller.cpp is probably the master controller and running a couple tasks
-// thrusterController, SensorController and SerialDataHandler
 /*********************************************************
  * 
  * Name:  SerialMsgTask

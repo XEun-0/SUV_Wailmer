@@ -62,30 +62,74 @@ uint8_t* StatusMsg::GetOutBufferPointer() {
     return outBuffer;
 }
 
+/*********************************************************
+ * 
+ * Name:  GetSensorOutInfo
+ * Notes: n/a
+ * 
+ *********************************************************/
 uint32_t StatusMsg::GetSensorOutInfo(uint8_t i) {
     return outBuffer[i];
 }
 
+/*********************************************************
+ * 
+ * Name:  GetValidationByte
+ * Notes: n/a
+ * 
+ *********************************************************/
 uint8_t StatusMsg::GetValidationByte() {
     return outBuffer[32];
 }
 
+/*********************************************************
+ * 
+ * Name:  SetValidationByte
+ * Notes: n/a
+ * 
+ *********************************************************/
 void StatusMsg::SetValidationByte(uint8_t setByte) {
     validationByte = setByte;
 }
 
+/*********************************************************
+ * 
+ * Name:  SetIsSensorPopulated
+ * Notes: n/a
+ * 
+ *********************************************************/
 void StatusMsg::SetIsSensorPopulated(bool val) {
     isSensorPopulated = val;
 }
 
+/*********************************************************
+ * 
+ * Name:  SetIsThrusterPopulated
+ * Notes: n/a
+ * 
+ *********************************************************/
 void StatusMsg::SetIsThrusterPopulated(bool val) {
     isThrusterPopulated = val;
 }
 
+/*********************************************************
+ * 
+ * Name:  GetIsSensorPopulated
+
+ * Notes: n/a
+ * 
+ *********************************************************/
 bool StatusMsg::GetIsSensorPopulated() {
     return isSensorPopulated;
 }
 
+/*********************************************************
+ * 
+ * Name:  GetIsThrusterPopulated
+
+ * Notes: n/a
+ * 
+ *********************************************************/
 bool StatusMsg::GetIsThrusterPopulated() {
     return isThrusterPopulated;
 }
