@@ -15,7 +15,7 @@ char buffer[15] = "hello\n";
 #define DEBUG_TXRX 0
 #define DEBUG_SINGLE_TXRX 1
 
-#define SENSOR_BUFFER_SIZE 32
+#define SENSOR_BUFFER_SIZE 52
 #define CHECKSUM_SIZE 2
 #define STX_AND_ETX_BYTES 4
 #define OUT_BUTTER_SIZE  SENSOR_BUFFER_SIZE + CHECKSUM_SIZE + STX_AND_ETX_BYTES
@@ -59,7 +59,6 @@ MainLayout::MainLayout(QWidget *parent)
   this->initializeUI();
   memset(outBuffer, 0, SENSOR_BUFFER_SIZE);
   memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
-  memset(&sensor_info, 0, SENSOR_BUFFER_SIZE);
 }
 
 void MainLayout::initializeUI() {
@@ -276,6 +275,7 @@ void MainLayout::txRxFromSerial()
   bytesAvailable = serial.available();
   printf("bytes available: %d\n", bytesAvailable);
   
+  
   if (bytesAvailable != SENSOR_BUFFER_SIZE && currProg != GO) {
     serial.flushReceiver();
     return;
@@ -283,9 +283,13 @@ void MainLayout::txRxFromSerial()
     currProg = GO;
     updateLabel(LABEL_GO);
   }
-  
-  serial.readBytes(sensorBuffer, SENSOR_BUFFER_SIZE, 2000, 1000);
-  
+  TTCSohRespType ttcSohResp;
+  checkStructSizes();
+  uint8_t ttcSohRespBuffer[sizeof(TTCSohRespType)];
+  memset(ttcSohRespBuffer, 0, sizeof(TTCSohRespType));
+
+  serial.readBytes(ttcSohRespBuffer, sizeof(TTCSohRespType), 2000, 1000);
+  hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
   // memcpy(&sensor_info.baroPressure, &sensorBuffer[0], sizeof(sensor_info.baroPressure));
   // memcpy(&sensor_info.baroTemp, &sensorBuffer[4], sizeof(sensor_info.baroTemp));
   // memcpy(&sensor_info.baroDepth, &sensorBuffer[8], sizeof(sensor_info.baroDepth));
@@ -298,7 +302,7 @@ void MainLayout::txRxFromSerial()
   // // bytes 28-29 = 1 byte
   // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
 
-  memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  // memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
   updateLabel(SENSOR_FIELDS);
   //}
 #else
