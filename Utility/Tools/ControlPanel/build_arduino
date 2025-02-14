@@ -2,6 +2,6 @@
 
 pushd ../../../Devices/Arduino/controller/
 
-pio run
+./build_release
 
 popd

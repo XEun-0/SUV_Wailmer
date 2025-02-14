@@ -1,127 +1,162 @@
-#include <Wire.h>
-#include "MS5837.h"
-#include <Adafruit_BNO055.h>
-#include <Arduino_FreeRTOS.h>
-#include <Servo.h>
-#include "sensorController.h"
-#include "thrusterController.h"
-#include "serialDataHandler.h"
-#include "statusMsg.h"
+#include "controller.h"
+#include "Common/taskGlobals.h"        // TEN_SECONDS_DELAY
 
-SensorController    *sensors;
-ThrusterController  *thrusters;
-SerialDataHandler   *serialHandler;
+//====== Initialize Variables ============================
+
+Controller *Controller::instance = nullptr;
+
+//========================================================
 
 /*********************************************************
  * 
- * Name:  SerialMsgTask
- * Notes: n/a
+ * Name:  Controller
+ * Notes: See controller.h
  * 
  *********************************************************/
-void SerialMsgTask(void *pvParams) {
-    while (1) {
-        TaskParams_t* params = (TaskParams_t*)pvParams;
-        serialHandler->Run(params);
+Controller::Controller(void) {
 
-        vTaskDelay( serialHandler->GetTaskMS() / portTICK_PERIOD_MS);
+}
+
+/*********************************************************
+ * 
+ * Name:  ~Controller
+ * Notes: See controller.h
+ * 
+ *********************************************************/
+Controller::~Controller(void) {
+
+}
+
+/*********************************************************
+ * 
+ * Name:  getInstance
+ * Notes: See controller.h
+ * 
+ *********************************************************/
+Controller *Controller::getInstance (void) {
+    if (Controller::instance == nullptr) {
+        Controller::instance = new Controller();
+        Controller::instance->init(); // may not be needed
     }
+
+    return Controller::instance;
 }
 
 /*********************************************************
  * 
- * Name:  ThrusterCommandsTask
- * Notes: n/a
+ * Name:  init
+ * Notes: See controller.h
  * 
  *********************************************************/
-void ThrusterCommandsTask(void *pvParams) {
-    while (1) {
-        TaskParams_t* params = (TaskParams_t*)pvParams;
-        thrusters->Run(params);
+void Controller::init(void) {
+    l_ttcInterfaceInitialized = false;
+}
 
-        vTaskDelay( thrusters->GetTaskMS() / portTICK_PERIOD_MS);
+/*********************************************************
+ * 
+ * Name:  mainLoop
+ * Notes: See controller.h
+ * 
+ *********************************************************/
+void Controller::mainLoop(void) {
+
+    // Do whatever
+
+    while(!gTTCInterface.isInitialized()) {
+        vTaskDelay(TEN_SECONDS_DELAY);
     }
-}
 
-/*********************************************************
- * 
- * Name:  AggregateSensorsTask
- * Notes: n/a
- * 
- *********************************************************/
-void AggregateSensorsTask(void *pvParams) {
-    while (1) {
-        TaskParams_t* params = (TaskParams_t*)pvParams;
-        //params->statusMsg->SetValidationByte(4);
-        sensors->Run(params);
-        // Check if sensors have run
-        vTaskDelay( sensors->GetTaskMS() / portTICK_PERIOD_MS);
+    l_ttcInterfaceInitialized = true;
+    
+    while(1) {
+        #ifdef SERIAL_OUT
+        //Serial.println("[Controller] this is inside main controller");
+        #endif
+
+        #ifdef TIME_FUNC
+        TickType_t startTick = xTaskGetTickCount();
+        #endif
+
+        getSendSOHSerial();
+
+        #ifdef TIME_FUNC
+        TickType_t currTick = xTaskGetTickCount();
+        Serial.print("It took getSendSOHSerial: ");
+        Serial.print(currTick - startTick);
+        Serial.print(" ticks\n");
+        #endif
+        
+        // getThrusterInfo
+
+        // sendSOH
+
+        // getCommandsFromVCP
+
+        vTaskDelay(MAIN_CONTROLLER_TASK_DELAY);
     }
+
+    // Send error code serial msg if needed.
+    vTaskDelete( NULL );
 }
+
+void Controller::getSendSOHSerial(void) {
+    TTCSohRespType ttcSoh;
+    memset(&ttcSoh, 0, sizeof(TTCSohRespType));
+
+    // Waht is SOH - State of Health
+    // Stats and information about the specific component 
+    // in question. i.e. Sensors, Thrusters
+    gTTCInterface.gatherSensorSOH(&ttcSoh);
+
+    gTTCInterface.gatherThrusterSOH(&ttcSoh);
+    
+    #if !defined(SERIAL_OUT)
+    Serial.write((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+    #else
+    // char avr_buffer[100];
+
+    // char floatX[10], floatY[10], floatZ[10];
+    // dtostrf(ttcSoh.sensorInfo.imuOrientX, 6, 2, floatX); // Width 6, 2 decimal places
+    // dtostrf(ttcSoh.sensorInfo.imuOrientY, 6, 2, floatY);
+    // dtostrf(ttcSoh.sensorInfo.imuOrientZ, 6, 2, floatZ);
+
+    // sprintf(avr_buffer, "X: %s, Y: %s, Z: %s", floatX, floatY, floatZ);
+    // Serial.println(avr_buffer);
+    #endif
+
+    // process msg before sending out
+
+    #if SERIAL_OUT
+    //hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+    //checkStructSizes();
+    #endif
+
+    // Serial.println(ttcSoh.sensorInfo.imuOrientX);
+}
+
+void Controller::rxSerialCommands(void) {
+    // From Serial comms recieve commands and 
+    // populate command struct for TTCInterface
+    // tasking
+    ThrusterCommandsType rxThrusterCmds;
+    // Serial.read something and store in buffer
+
+    gTTCInterface.doThrusterCommands(rxThrusterCmds);
+}
+
+// Not in class
 
 /*********************************************************
  * 
- * Name:  setup
- * Notes: n/a
+ * Name:  controllerTaskLauncher
+ * Notes: See controller.h
  * 
  *********************************************************/
-void setup() {
-    Serial.begin(115200);
-
-    sensors = new SensorController();
-    thrusters = new ThrusterController();
-    serialHandler = new SerialDataHandler();
-
-    sensors->InitializeSensors();
-    thrusters->InitializeThrusters();
-    serialHandler->InitializeSerialDataHandler();
-
-    StatusMsg* statusMsg = new StatusMsg();
-    
-    // Create TaskParams type with counting semaphore and statusMsg
-    TaskParams_t taskParameters = { 
-                                    xSemaphoreCreateMutex(),    // xSerialMutex
-                                    xEventGroupCreate(),        // xSerialEventGroup
-                                    statusMsg
-                                  };
-    
-    // Create Serial data handling task. 
-    xTaskCreate(
-        SerialMsgTask,                              // Function to be called
-        "SerialMsgTask",                            // Name of the task
-        512,                                        // Stack size
-        &taskParameters,                            // Parameters passed to task
-        2,                                          // Task priority (higher number = higher priority)
-        serialHandler->GetTaskHandle()              // Task handle for reference
-    );
-
-    // Create Sensor Aggregation Task
-    xTaskCreate(
-        AggregateSensorsTask,                       // Function to be called
-        "AggregateSensorsTask",                     // Name of the task
-        512,                                        // Stack size
-        &taskParameters,                            // Parameters passed to task
-        3,                                          // Task priority (higher number = higher priority)
-        &(sensors->AggregateSensorsTaskHandle)      // Task handle for reference
-    );
-
-    // Create Motor Commands Task
-    xTaskCreate(
-        ThrusterCommandsTask,                       // Function to be called
-        "MotorCommandsTask",                        // Name of the task
-        512,                                        // Stack size
-        &taskParameters,                            // Parameters passed to task
-        1,                                          // Task priority (higher number = higher priority)
-        thrusters->GetTaskHandle()                  // Task handle for reference
-    );
-    
-    // Start the scheduler
-    vTaskStartScheduler();
+void controllerTaskLauncher( void *pvParams ) {
+    // Retrieve the singleton instance of the Controller class.
+    // This ensures that only one instance of Controller exists 
+    // and is used throughout the program.
+    Controller *pController = Controller::getInstance();
+    pController->mainLoop();
 }
 
-/*********************************************************
- * 
- * Name:  loop
- * Notes: RTOS removes loop functionality
- * 
- *********************************************************/
-void loop() {}
