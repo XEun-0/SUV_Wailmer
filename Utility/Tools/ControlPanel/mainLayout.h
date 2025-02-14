@@ -10,7 +10,7 @@
 #include <QSpacerItem>
 #include "../../../ROS_ws/src/Common/serialib.h"
 #include "Common/util.h"
-#include "../../../Devices/Arduino/controller/include/Interface/ttcSohResp.h"
+#include "../../../Vehicle/controller/include/Interface/ttcSohResp.h"
 
 namespace Ui {
   class MainLayout;

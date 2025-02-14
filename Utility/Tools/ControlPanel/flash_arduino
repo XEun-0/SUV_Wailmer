@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pushd ../../../Devices/Arduino/controller/
+pushd ../../../Vehicle/controller/
 
 ./flash_release
 
