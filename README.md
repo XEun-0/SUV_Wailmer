@@ -1,5 +1,5 @@
 # Submarine Robotics Introduction
-![SUV-Wailmer](Utility\SUV\Graphics\banner-1.png)
+![SUV-Wailmer](Utility/SUV/Graphics/banner-1.png)
 SUV - Small Underwater Vehicle. Codename WAILMER
 # What does the robot look like?
 (1) Robot Configuration: This robot has a configuration as follows. It has in total 6 thrusters with four (1-4) for leveling and depth control, and two (5-6) for horizontal motion control (forward, backward, turning). 
