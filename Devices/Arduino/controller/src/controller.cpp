@@ -70,11 +70,21 @@ void Controller::mainLoop(void) {
     
     while(1) {
         #ifdef SERIAL_OUT
-        Serial.println("[Controller] this is inside main controller");
+        //Serial.println("[Controller] this is inside main controller");
+        #endif
+
+        #ifdef TIME_FUNC
+        TickType_t startTick = xTaskGetTickCount();
         #endif
 
         getSendSOHSerial();
-        // getSensorInfo
+
+        #ifdef TIME_FUNC
+        TickType_t currTick = xTaskGetTickCount();
+        Serial.print("It took getSendSOHSerial: ");
+        Serial.print(currTick - startTick);
+        Serial.print(" ticks\n");
+        #endif
         
         // getThrusterInfo
 
@@ -82,7 +92,7 @@ void Controller::mainLoop(void) {
 
         // getCommandsFromVCP
 
-        vTaskDelay(pdMS_TO_TICKS(MAIN_CONTROLLER_TASK_DELAY));
+        vTaskDelay(MAIN_CONTROLLER_TASK_DELAY);
     }
 
     // Send error code serial msg if needed.
@@ -99,16 +109,26 @@ void Controller::getSendSOHSerial(void) {
     gTTCInterface.gatherSensorSOH(&ttcSoh);
 
     gTTCInterface.gatherThrusterSOH(&ttcSoh);
-
-    //Serial.println("Printing Values:");
-    //Serial.println(ttcSoh.sensorInfo.imuOrientX);
+    
     #if !defined(SERIAL_OUT)
     Serial.write((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+    #else
+    // char avr_buffer[100];
+
+    // char floatX[10], floatY[10], floatZ[10];
+    // dtostrf(ttcSoh.sensorInfo.imuOrientX, 6, 2, floatX); // Width 6, 2 decimal places
+    // dtostrf(ttcSoh.sensorInfo.imuOrientY, 6, 2, floatY);
+    // dtostrf(ttcSoh.sensorInfo.imuOrientZ, 6, 2, floatZ);
+
+    // sprintf(avr_buffer, "X: %s, Y: %s, Z: %s", floatX, floatY, floatZ);
+    // Serial.println(avr_buffer);
     #endif
+
     // process msg before sending out
-    //hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+
     #if SERIAL_OUT
-    checkStructSizes();
+    //hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+    //checkStructSizes();
     #endif
 
     // Serial.println(ttcSoh.sensorInfo.imuOrientX);

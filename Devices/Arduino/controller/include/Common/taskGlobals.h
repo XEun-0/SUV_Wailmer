@@ -4,11 +4,11 @@
 //========================================================
 //=========== Delays =====================================
 //========================================================
-#define TTC_TASK_DELAY                  200
-#define MAIN_CONTROLLER_TASK_DELAY      100
-// #define TEN_SECONDS_DELAY               1000
-#define TEN_SECONDS_DELAY       pdMS_TO_TICKS(10000) 
-#define FIVE_SECONDS_DELAY      pdMS_TO_TICKS(5000) 
+#define TTC_TASK_DELAY                  pdMS_TO_TICKS(20)
+#define MAIN_CONTROLLER_TASK_DELAY      pdMS_TO_TICKS(100)
+
+#define TEN_SECONDS_DELAY               pdMS_TO_TICKS(10000) 
+#define FIVE_SECONDS_DELAY              pdMS_TO_TICKS(5000) 
 #define SYS_BAUD_RATE                   115200
 #define TTC_SENSOR_MUTEX                20
 #define TTC_THRUSTER_MUTEX              15

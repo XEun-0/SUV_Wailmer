@@ -12,7 +12,6 @@
 void compareSizes(char * name, int actualSize, int expectedSize);
 void checkStructSizes(void);
 void hexDump(uint8_t *data, int length);
-void pPrint(const char* msg, ...);
-
+void pPrintf(const char* msg, ...);
 
 #endif // UTIL_H

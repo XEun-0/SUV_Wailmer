@@ -2,7 +2,7 @@
 
 // Variables
 #ifdef __AVR_ATmega2560__
-char avr_buffer[100];
+char avr_buffer[300];
 #endif
 
 /*********************************************************
@@ -39,7 +39,7 @@ void checkStructSizes(void) {
     compareSizes((char *)"SensorInfoType",                  sizeof(SensorInfoType),                 36);
     compareSizes((char *)"ThrusterIndividualTestProgress",  sizeof(ThrusterIndividualTestProgress), 2);
     compareSizes((char *)"ThrusterSpeedsType",              sizeof(ThrusterSpeedsType),             12);
-    compareSizes((char *)"ThrusterInfoType",                sizeof(ThrusterInfoType),               177);
+    compareSizes((char *)"ThrusterInfoType",                sizeof(ThrusterInfoType),               16);
     compareSizes((char *)"TTCSohRespType",                  sizeof(TTCSohRespType),                 52);
     compareSizes((char *)"ThrusterCommandsType",            sizeof(ThrusterCommandsType),           12);
 
@@ -59,8 +59,8 @@ void hexDump(uint8_t *data, int length) {
         #ifdef CONTROL_PANEL
         printf("%02X, ", *c++);
         #else
-        Serial.print(*c++, HEX);
-        Serial.print(" ");
+        sprintf(avr_buffer, "%02X, ", *c++);
+        Serial.print(avr_buffer);
         #endif
     }
     #ifdef CONTROL_PANEL
@@ -76,6 +76,6 @@ void hexDump(uint8_t *data, int length) {
  * Notes: See util.h
  * 
  *********************************************************/
-void pPrint(const char* msg, ...) {
+void pPrintf(const char* msg, ...) {
     // TODO
 }

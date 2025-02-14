@@ -23,7 +23,7 @@ char buffer[15] = "hello\n";
 #define STX 0x02
 #define ETX 0x03
 
-#define SERIAL_RECEIVE_MS 150
+#define SERIAL_RECEIVE_MS 50
 
 enum Progress_State {
   INITIALIZED_SENSORS,
@@ -50,7 +50,8 @@ struct SensorInfo {
   uint16_t checksum;      // Changed checksum to be 2 bytes (uint16_t)
 }; // 4 x 7 + 1 + 1 = 32 bytes
 SensorInfo sensor_info;
-
+TTCSohRespType ttcSohResp;
+uint8_t ttcSohRespBuffer[sizeof(TTCSohRespType)];
 uint8_t sensorBuffer[SENSOR_BUFFER_SIZE];
 uint8_t outBuffer[SENSOR_BUFFER_SIZE];
 
@@ -59,6 +60,7 @@ MainLayout::MainLayout(QWidget *parent)
   this->initializeUI();
   memset(outBuffer, 0, SENSOR_BUFFER_SIZE);
   memset(sensorBuffer, 0, SENSOR_BUFFER_SIZE);
+  memset(ttcSohRespBuffer, 0, SENSOR_BUFFER_SIZE);
 }
 
 void MainLayout::initializeUI() {
@@ -271,11 +273,11 @@ void MainLayout::txRxFromSerial()
 
   // printf("value is %f\n", rxFloat);
 
-  // Wait until guaranteed 32 bytes inside recieve buffer
   bytesAvailable = serial.available();
   printf("bytes available: %d\n", bytesAvailable);
   
-  
+  // checkStructSizes();
+
   if (bytesAvailable != SENSOR_BUFFER_SIZE && currProg != GO) {
     serial.flushReceiver();
     return;
@@ -283,13 +285,13 @@ void MainLayout::txRxFromSerial()
     currProg = GO;
     updateLabel(LABEL_GO);
   }
-  TTCSohRespType ttcSohResp;
-  checkStructSizes();
-  uint8_t ttcSohRespBuffer[sizeof(TTCSohRespType)];
-  memset(ttcSohRespBuffer, 0, sizeof(TTCSohRespType));
 
   serial.readBytes(ttcSohRespBuffer, sizeof(TTCSohRespType), 2000, 1000);
   hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
+  memcpy(&ttcSohResp, ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
+  hexDump((uint8_t *)&ttcSohResp, SENSOR_BUFFER_SIZE);
+
+  printf("orientationx: %f\n", ttcSohResp.sensorInfo.imuOrientX);
   // memcpy(&sensor_info.baroPressure, &sensorBuffer[0], sizeof(sensor_info.baroPressure));
   // memcpy(&sensor_info.baroTemp, &sensorBuffer[4], sizeof(sensor_info.baroTemp));
   // memcpy(&sensor_info.baroDepth, &sensorBuffer[8], sizeof(sensor_info.baroDepth));
@@ -341,26 +343,29 @@ int16_t MainLayout::calculateChecksum(uint8_t *data, size_t length) {
 }
 
 void MainLayout::updateLabel(Label_Type label_type) {
-  // enum Label_Type {
-  //   SENSOR_FIELDS, 
-  //   MOTOR_SPEED, 
-  //   LABEL_GO, 
-  //   LABEL_NOGO
-  // };
-  
   switch(label_type) {
     case SENSOR_FIELDS:
       // Barometer
-      baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(sensor_info.baroPressure, 0, 'f', 2));
-      baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(sensor_info.baroTemp, 0, 'f', 2));
-      baroDepth_Label->setText(QString("Barometer Depth: %1").arg(sensor_info.baroDepth, 0, 'f', 2));
-      baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(sensor_info.baroAltitude, 0, 'f', 2));
+      baroPressure_Label->setText(QString("Barometer Pressure: %1").arg(ttcSohResp.sensorInfo.baroPressure, 0, 'f', 2));
+      baroTemp_Label->setText(QString("Barometer Temperature: %1").arg(ttcSohResp.sensorInfo.baroTemp, 0, 'f', 2));
+      baroDepth_Label->setText(QString("Barometer Depth: %1").arg(ttcSohResp.sensorInfo.baroDepth, 0, 'f', 2));
+      baroAltitude_Label->setText(QString("Barometer Altitude: %1").arg(ttcSohResp.sensorInfo.baroAltitude, 0, 'f', 2));
       
       // IMU
-      imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(sensor_info.imuOrientX, 0, 'f', 2));
-      imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(sensor_info.imuOrientY, 0, 'f', 2));
-      imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(sensor_info.imuOrientZ, 0, 'f', 2));
-      imuTemp_Label->setText(QString("IMU Temperature: %1").arg(sensor_info.imuTemp));
+      imuOrientX_Label->setText(QString("IMU Orientation X: %1").arg(ttcSohResp.sensorInfo.imuOrientX, 0, 'f', 2));
+      imuOrientY_Label->setText(QString("IMU Orientation Y: %1").arg(ttcSohResp.sensorInfo.imuOrientY, 0, 'f', 2));
+      imuOrientZ_Label->setText(QString("IMU Orientation Z: %1").arg(ttcSohResp.sensorInfo.imuOrientZ, 0, 'f', 2));
+      imuTemp_Label->setText(QString("IMU Temperature: %1").arg(ttcSohResp.sensorInfo.imuTemp));
+
+      // Motors
+      currentMotorSpeed1_Label->setText(QString("Thruster 1 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.left_thruster_speed));
+      currentMotorSpeed2_Label->setText(QString("Thruster 2 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.right_thruster_speed));
+      currentMotorSpeed3_Label->setText(QString("Thruster 3 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.front_right_thruster_speed));
+      currentMotorSpeed4_Label->setText(QString("Thruster 4 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.front_left_thruster_speed));
+      currentMotorSpeed5_Label->setText(QString("Thruster 5 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_left_thruster_speed));
+      currentMotorSpeed6_Label->setText(QString("Thruster 6 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_right_thruster_speed));
+
+  // thrusterControllerState_Label = new QLabel("Thruster Controller State: ");
       break;
     case MOTOR_SPEED:
       break;

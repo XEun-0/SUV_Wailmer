@@ -93,7 +93,7 @@ struct ThrusterInfoType {
 #else
 struct __attribute__((packed)) ThrusterInfoType {
 #endif
-  ThrusterState                     thrusterControllerState;
+  uint16_t                          thrusterControllerState; // Use ThrusterState
   ThrusterIndividualTestProgress    thrusterTestState;
   ThrusterSpeedsType                thrusterSpeeds;
 }; // Total Size: 2 + 2 + 12 = 16 bytes

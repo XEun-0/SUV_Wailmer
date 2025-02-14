@@ -76,7 +76,7 @@ void TTCInterface::gatherSensorSOH(TTCSohRespType *pInfo) {
 
     if (sohMutex && xSemaphoreTake(sohMutex, TTC_SENSOR_MUTEX) == pdTRUE) {
         #ifdef SERIAL_OUT
-        Serial.println("[TTC] gatherSensorSOH has semaphore");
+        //Serial.println("[TTC] gatherSensorSOH has semaphore");
         #endif
 
         pInfo->sensorInfo.baroPressure   = baroPressure;
@@ -93,7 +93,7 @@ void TTCInterface::gatherSensorSOH(TTCSohRespType *pInfo) {
     } else {
         // send error code through serial
         #ifdef SERIAL_OUT
-        Serial.println("[TTC] gatherSensorSOH could not take semaphore");
+        //Serial.println("[TTC] gatherSensorSOH could not take semaphore");
         #endif
     }
 }
@@ -107,10 +107,10 @@ void TTCInterface::gatherSensorSOH(TTCSohRespType *pInfo) {
 void TTCInterface::gatherThrusterSOH(TTCSohRespType *pInfo) {
     if (sohMutex && xSemaphoreTake(sohMutex, TTC_THRUSTER_MUTEX) == pdTRUE) {
         #ifdef SERIAL_OUT
-        Serial.println("[TTC] gatherThrusterSOH has semaphore");
+        //Serial.println("[TTC] gatherThrusterSOH has semaphore");
         #endif
 
-        pInfo->thrusterInfo.thrusterControllerState = currThrusterState;
+        pInfo->thrusterInfo.thrusterControllerState = (ThrusterState)currThrusterState;
 
         if (currThrusterState == THRUSTER_GO) {
             // 
@@ -129,7 +129,7 @@ void TTCInterface::gatherThrusterSOH(TTCSohRespType *pInfo) {
     } else {
         // send error code through serial
         #ifdef SERIAL_OUT
-        Serial.println("[TTC] gatherThrusterSOH could not take semaphore");
+        //Serial.println("[TTC] gatherThrusterSOH could not take semaphore");
         #endif
     }
 }
@@ -250,6 +250,18 @@ SensorInitStatusCodeType TTCInterface::initializeIMU() {
         vTaskDelay(pdMS_TO_TICKS(1000)); // 1 second
     }
     
+    bno.setMode(OPERATION_MODE_CONFIG);
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+    // Load calibration data
+    bno.setSensorOffsets(bnoCalibrationData);
+
+    // Switch back to normal operation mode
+    bno.setMode(OPERATION_MODE_NDOF);
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
     bno.setExtCrystalUse(true);
 
     return tempImuInitStatus;
@@ -305,11 +317,11 @@ void TTCInterface::processInfo() {
 
     while(imuInitStatus == IMU_GOOD && baroInitStatus == BARO_GOOD) {
         #ifdef SERIAL_OUT
-        Serial.println("[TTC] this is inside TTCInterface");
+        //Serial.println("[TTC] this is inside TTCInterface");
         #endif
         if (sohMutex && xSemaphoreTake(sohMutex, TTC_SENSOR_MUTEX) == pdTRUE) {
             #ifdef SERIAL_OUT
-            Serial.println("[TTC] processInfo has semaphore");
+            //Serial.println("[TTC] processInfo has semaphore");
             #endif
             
             baro.read();
@@ -328,10 +340,33 @@ void TTCInterface::processInfo() {
             imuOrientZ      = event.orientation.z;
             imuTemp         = bno.getTemp();
 
+            // Incorporate calibration tasking later
+            //=====================================================================
+            // char cal_buffer[50];  // Ensure the buffer is large enough
+            // uint8_t sys, gyr, acc, mag;
+            // bno.getCalibration(&sys, &gyr, &acc, &mag);
+
+            // sprintf(cal_buffer, "CALIBRATION: SYS=%d GYR=%d ACC=%d MAG=%d", sys, gyr, acc, mag);
+            // Serial.println(cal_buffer);
+
+            // if (sys == 3 && gyr == 3 && acc == 3 && mag == 3) {
+            //     uint8_t calData[22];
+            //     bno.getSensorOffsets(calData);
+                
+            //     Serial.print("Calibration Data: ");
+            //     for (int i = 0; i < 22; i++) {
+            //         Serial.print(calData[i], HEX);
+            //         Serial.print(" ");
+            //     }
+            //     Serial.println();
+            // }
+            //=====================================================================
+
             // Thrusters
             processThrusterState();
 
             xSemaphoreGive(sohMutex);
+            
         } else {
             // send error code through serial
             #ifdef SERIAL_OUT
@@ -339,7 +374,7 @@ void TTCInterface::processInfo() {
             #endif
         }
         
-        vTaskDelay(pdMS_TO_TICKS(TTC_TASK_DELAY));
+        vTaskDelay(TTC_TASK_DELAY);
     }
 
     // EOL for TTC task
