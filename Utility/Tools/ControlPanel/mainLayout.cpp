@@ -265,8 +265,7 @@ void MainLayout::txRxFromSerial()
   // }
   
   // uint8_t byteFloatBuffer[sizeof(sensor_info.imuOrientX)];
-  // float rxFloat = 0;
-  
+
   // serial.readBytes(byteFloatBuffer, sizeof(sensor_info.imuOrientX), 2000, 1000);
   //if (bytesRead == sizeof(sensor_info.imuOrientX)) {
   // memcpy(&rxFloat, byteFloatBuffer, sizeof(rxFloat));
@@ -287,11 +286,11 @@ void MainLayout::txRxFromSerial()
   }
 
   serial.readBytes(ttcSohRespBuffer, sizeof(TTCSohRespType), 2000, 1000);
-  hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
+  //hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
   memcpy(&ttcSohResp, ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
-  hexDump((uint8_t *)&ttcSohResp, SENSOR_BUFFER_SIZE);
+  //hexDump((uint8_t *)&ttcSohResp, SENSOR_BUFFER_SIZE);
 
-  printf("orientationx: %f\n", ttcSohResp.sensorInfo.imuOrientX);
+  //printf("orientationx: %f\n", ttcSohResp.sensorInfo.imuOrientX);
   // memcpy(&sensor_info.baroPressure, &sensorBuffer[0], sizeof(sensor_info.baroPressure));
   // memcpy(&sensor_info.baroTemp, &sensorBuffer[4], sizeof(sensor_info.baroTemp));
   // memcpy(&sensor_info.baroDepth, &sensorBuffer[8], sizeof(sensor_info.baroDepth));
@@ -305,6 +304,8 @@ void MainLayout::txRxFromSerial()
   // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
 
   // memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  pPrintf("testing pPrintf %d\n", 5);
+  
   updateLabel(SENSOR_FIELDS);
   //}
 #else
@@ -365,7 +366,8 @@ void MainLayout::updateLabel(Label_Type label_type) {
       currentMotorSpeed5_Label->setText(QString("Thruster 5 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_left_thruster_speed));
       currentMotorSpeed6_Label->setText(QString("Thruster 6 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_right_thruster_speed));
 
-  // thrusterControllerState_Label = new QLabel("Thruster Controller State: ");
+      thrusterControllerState_Label->setText(QString("Thruster Controller State: %1").arg(ttcSohResp.thrusterInfo.thrusterControllerState));
+
       break;
     case MOTOR_SPEED:
       break;

@@ -215,9 +215,7 @@ private:
      * 
      *********************************************************/
     void setLocalThrusterSpeed(ThrusterSpeedsType spds);
-
     
-
 };
 
 #endif // TTCINTERFACE_H

@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "Common/taskGlobals.h"        // TEN_SECONDS_DELAY
+#include "pPrintf.h"
 
 //====== Initialize Variables ============================
 
@@ -71,6 +72,8 @@ void Controller::mainLoop(void) {
     while(1) {
         #ifdef SERIAL_OUT
         //Serial.println("[Controller] this is inside main controller");
+        pPrintf("hello %d\n", 8);
+        //testSomething();
         #endif
 
         #ifdef TIME_FUNC

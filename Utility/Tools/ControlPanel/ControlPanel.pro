@@ -1,12 +1,17 @@
 TEMPLATE = app
 TARGET = ControlPanel
-SOURCES += main.cpp mainLayout.cpp ../../../ROS_ws/src/Common/serialib.cpp \
-           ../../../Vehicle/controller/src/util.cpp
-HEADERS += mainLayout.h ../../../ROS_ws/src/Common/serialib.h \
+SOURCES += main.cpp mainLayout.cpp \
+           ../../../Vehicle/controller/src/util.cpp \
+           ../../../Vehicle/AppCommon/pPrintf.cpp \
+           ../../../Vehicle/AppCommon/serialib.cpp
+HEADERS += mainLayout.h \
            ../../../Vehicle/controller/include/Interface/ttcSohResp.h \
-           ../../../Vehicle/controller/include/Common/util.h
+           ../../../Vehicle/controller/include/Common/util.h \
+           ../../../Vehicle/AppCommon/pPrintf.h \
+           ../../../Vehicle/AppCommon/serialib.h
 
-INCLUDEPATH += ../../../Vehicle/controller/include/
+INCLUDEPATH += . ../../../Vehicle/controller/include/ \
+               ../../../Vehicle/AppCommon/
 
 DEFINES += CONTROL_PANEL
 
