@@ -5,7 +5,7 @@
 
 /*********************************************************
  * 
- * Name:  hexDump
+ * Name:  pPrint
  * Notes: See pPrintf.h
  *       
  *********************************************************/
@@ -16,7 +16,8 @@ void pPrintf(const char* msg, ...) {
     
     va_list args;
     va_start(args, msg);
-
+    
+    // Arduino Compilation
     #if defined(__AVR_ATmega2560__)
     size_t msgSize = strlen(msg) + 20; // buffer size
     printf("strlen %d\n", msgSize);
@@ -27,6 +28,7 @@ void pPrintf(const char* msg, ...) {
     vsprintf(avr_buffer, msg, args);
     Serial.print(avr_buffer);
     #else
+    // Non-Arduino Compilation
     vprintf(msg, args);
     #endif
 

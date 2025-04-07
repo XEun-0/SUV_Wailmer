@@ -6,7 +6,7 @@
 #include <Arduino.h>                // Serial
 #include "string.h"
 #else
-#include <cstring>          // strlen
+#include <cstring>                  // strlen
 #include <iostream>                 // Use standard C++ output for Qt
 #include "serialib.h"
 #define Serial std::cout

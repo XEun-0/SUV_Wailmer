@@ -39,7 +39,9 @@ TTCInterface::~TTCInterface(void) {
 
 }
 
-// Public Functions
+//========================================================
+//=========== Public Functions ===========================
+//========================================================
 
 /*********************************************************
  * 
@@ -113,7 +115,6 @@ void TTCInterface::gatherThrusterSOH(TTCSohRespType *pInfo) {
         pInfo->thrusterInfo.thrusterControllerState = (ThrusterState)currThrusterState;
 
         if (currThrusterState == THRUSTER_GO) {
-            // 
             pInfo->thrusterInfo.thrusterSpeeds.left_thruster_speed = local_left_thruster_speed;
             pInfo->thrusterInfo.thrusterSpeeds.right_thruster_speed = local_right_thruster_speed;
             pInfo->thrusterInfo.thrusterSpeeds.front_right_thruster_speed = local_front_right_thruster_speed;
@@ -129,7 +130,7 @@ void TTCInterface::gatherThrusterSOH(TTCSohRespType *pInfo) {
     } else {
         // send error code through serial
         #ifdef SERIAL_OUT
-        //Serial.println("[TTC] gatherThrusterSOH could not take semaphore");
+        Serial.println("[TTC] gatherThrusterSOH could not take semaphore");
         #endif
     }
 }
@@ -161,7 +162,9 @@ void TTCInterface::TTCTaskLauncher() {
     );
 }
 
-// Private Functions
+//========================================================
+//=========== Private Functions ==========================
+//========================================================
 
 /*********************************************************
  * 
@@ -175,7 +178,7 @@ void TTCInterface::init(void) {
     baroInitStatus =    initializeBarometer();
     imuInitStatus =     initializeIMU();
 
-    //memset(&thruster_info, 0, THRUSTER_INFO_SIZE);
+    // memset(&thruster_info, 0, THRUSTER_INFO_SIZE);
 
     // Serial.println(sizeof(ThrusterIndividualTestProgress)); // verified 2 bytes
     // Serial.println(sizeof(SensorInfoType));     // 36
@@ -192,10 +195,10 @@ void TTCInterface::init(void) {
  * 
  *********************************************************/
 SensorInitStatusCodeType TTCInterface::initializeBarometer() {
-    // Can use this if dealing with only 1 sensor -- Need Factcheck
+    // Can use this if dealing with only 1 sensor
     Wire.begin();
 
-    // Wire.beginTransmission(0x76); -- Doesn't work weirdly
+    // Wire.beginTransmission(0x76);
 
     SensorInitStatusCodeType tempBaroInitStatus = BARO_GOOD;
     
@@ -216,7 +219,7 @@ SensorInitStatusCodeType TTCInterface::initializeBarometer() {
     }
 
     baro.setModel(MS5837::MS5837_30BA);
-    //(air ~ 1.23, freshwater ~ 997, seawater ~1029)
+    //(air ~ 1.23, freshwater ~997, seawater ~1029)
     baro.setFluidDensity(997);      
     
     return tempBaroInitStatus;
@@ -229,7 +232,7 @@ SensorInitStatusCodeType TTCInterface::initializeBarometer() {
  * 
  *********************************************************/
 SensorInitStatusCodeType TTCInterface::initializeIMU() {
-    // Can use this if dealing with only 1 sensor -- Need Factcheck
+    // Can use this if dealing with only 1 sensor
     Wire.beginTransmission(0x28);
     
     SensorInitStatusCodeType tempImuInitStatus = IMU_GOOD;
@@ -390,6 +393,7 @@ void TTCInterface::processInfoStatic(void *pvParams) {
     // Retrieve the singleton instance of the TTCInterface class.
     // This ensures that only one instance of TTCInterface exists 
     // and is used throughout the program.
+
     TTCInterface *ttcInterface = static_cast<TTCInterface *>(pvParams);
     ttcInterface->processInfo();
 }
@@ -452,6 +456,10 @@ void TTCInterface::processThrusterState() {
             // from commands
 
             // then update actual thrusters
+
+            // Here, most likely we want to process any information that
+            // involves changing of the motor values of the robot
+            // delay from VCP might be 0.5 - 1 seconds
 
             break;
         case THRUSTER_NOGO:

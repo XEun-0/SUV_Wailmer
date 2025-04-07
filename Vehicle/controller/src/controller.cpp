@@ -102,11 +102,17 @@ void Controller::mainLoop(void) {
     vTaskDelete( NULL );
 }
 
+/*********************************************************
+ * 
+ * Name:  getSendSOHSerial
+ * Notes: See controller.h
+ * 
+ *********************************************************/
 void Controller::getSendSOHSerial(void) {
     TTCSohRespType ttcSoh;
     memset(&ttcSoh, 0, sizeof(TTCSohRespType));
 
-    // Waht is SOH - State of Health
+    // What is SOH - State of Health
     // Stats and information about the specific component 
     // in question. i.e. Sensors, Thrusters
     gTTCInterface.gatherSensorSOH(&ttcSoh);
@@ -130,20 +136,27 @@ void Controller::getSendSOHSerial(void) {
     // process msg before sending out
 
     #if SERIAL_OUT
-    //hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
-    //checkStructSizes();
+    hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
+    checkStructSizes();
     #endif
 
     // Serial.println(ttcSoh.sensorInfo.imuOrientX);
 }
 
+/*********************************************************
+ * 
+ * Name:  rxSerialCommands
+ * Notes: See controller.h
+ * 
+ *********************************************************/
 void Controller::rxSerialCommands(void) {
     // From Serial comms recieve commands and 
     // populate command struct for TTCInterface
     // tasking
-    ThrusterCommandsType rxThrusterCmds;
-    // Serial.read something and store in buffer
 
+    ThrusterCommandsType rxThrusterCmds;
+    
+    // Serial.read something and store in buffer
     gTTCInterface.doThrusterCommands(rxThrusterCmds);
 }
 
@@ -159,6 +172,7 @@ void controllerTaskLauncher( void *pvParams ) {
     // Retrieve the singleton instance of the Controller class.
     // This ensures that only one instance of Controller exists 
     // and is used throughout the program.
+
     Controller *pController = Controller::getInstance();
     pController->mainLoop();
 }

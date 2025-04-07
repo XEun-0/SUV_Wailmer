@@ -37,18 +37,19 @@ Progress_State currProg = NOGO;
 Label_Type curr_label_type = SENSOR_FIELDS;
 
 struct SensorInfo {
-  float baroPressure;  // Changed from float to float
-  float baroTemp;      // Changed from float to float
-  float baroDepth;     // Changed from float to float
-  float baroAltitude;  // Changed from float to float
+  float baroPressure;     // Changed from float to float
+  float baroTemp;         // Changed from float to float
+  float baroDepth;        // Changed from float to float
+  float baroAltitude;     // Changed from float to float
 
-  float imuOrientX;    // Changed from float to float
-  float imuOrientY;    // Changed from float to float
-  float imuOrientZ;    // Changed from float to float
+  float imuOrientX;       // Changed from float to float
+  float imuOrientY;       // Changed from float to float
+  float imuOrientZ;       // Changed from float to float
   uint8_t imuTemp;
   uint8_t padding1[1];    // Adjust padding for alignment (optional)
   uint16_t checksum;      // Changed checksum to be 2 bytes (uint16_t)
 }; // 4 x 7 + 1 + 1 = 32 bytes
+
 SensorInfo sensor_info;
 TTCSohRespType ttcSohResp;
 uint8_t ttcSohRespBuffer[sizeof(TTCSohRespType)];
@@ -304,7 +305,9 @@ void MainLayout::txRxFromSerial()
   // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
 
   // memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
-  pPrintf("testing pPrintf %d\n", 5);
+  
+  // Testing pPrint statement
+  // pPrintf("testing pPrintf %d\n", 5);
   
   updateLabel(SENSOR_FIELDS);
   //}
