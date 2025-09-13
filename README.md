@@ -40,5 +40,5 @@ SUV - Small Underwater Vehicle. Codename WAILMER
    - [ ] ROS2 configuration for a basic process
 
 ---
-## 2.5 Setup VNC
-(TBD)
+## 2.5 Setup rpi
+## 2.6 Setup jetson orin nano
