@@ -37,18 +37,19 @@ Progress_State currProg = NOGO;
 Label_Type curr_label_type = SENSOR_FIELDS;
 
 struct SensorInfo {
-  float baroPressure;  // Changed from float to float
-  float baroTemp;      // Changed from float to float
-  float baroDepth;     // Changed from float to float
-  float baroAltitude;  // Changed from float to float
+  float baroPressure;     // Changed from float to float
+  float baroTemp;         // Changed from float to float
+  float baroDepth;        // Changed from float to float
+  float baroAltitude;     // Changed from float to float
 
-  float imuOrientX;    // Changed from float to float
-  float imuOrientY;    // Changed from float to float
-  float imuOrientZ;    // Changed from float to float
+  float imuOrientX;       // Changed from float to float
+  float imuOrientY;       // Changed from float to float
+  float imuOrientZ;       // Changed from float to float
   uint8_t imuTemp;
   uint8_t padding1[1];    // Adjust padding for alignment (optional)
   uint16_t checksum;      // Changed checksum to be 2 bytes (uint16_t)
 }; // 4 x 7 + 1 + 1 = 32 bytes
+
 SensorInfo sensor_info;
 TTCSohRespType ttcSohResp;
 uint8_t ttcSohRespBuffer[sizeof(TTCSohRespType)];
@@ -265,8 +266,7 @@ void MainLayout::txRxFromSerial()
   // }
   
   // uint8_t byteFloatBuffer[sizeof(sensor_info.imuOrientX)];
-  // float rxFloat = 0;
-  
+
   // serial.readBytes(byteFloatBuffer, sizeof(sensor_info.imuOrientX), 2000, 1000);
   //if (bytesRead == sizeof(sensor_info.imuOrientX)) {
   // memcpy(&rxFloat, byteFloatBuffer, sizeof(rxFloat));
@@ -287,11 +287,11 @@ void MainLayout::txRxFromSerial()
   }
 
   serial.readBytes(ttcSohRespBuffer, sizeof(TTCSohRespType), 2000, 1000);
-  hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
+  //hexDump((uint8_t *)ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
   memcpy(&ttcSohResp, ttcSohRespBuffer, SENSOR_BUFFER_SIZE);
-  hexDump((uint8_t *)&ttcSohResp, SENSOR_BUFFER_SIZE);
+  //hexDump((uint8_t *)&ttcSohResp, SENSOR_BUFFER_SIZE);
 
-  printf("orientationx: %f\n", ttcSohResp.sensorInfo.imuOrientX);
+  //printf("orientationx: %f\n", ttcSohResp.sensorInfo.imuOrientX);
   // memcpy(&sensor_info.baroPressure, &sensorBuffer[0], sizeof(sensor_info.baroPressure));
   // memcpy(&sensor_info.baroTemp, &sensorBuffer[4], sizeof(sensor_info.baroTemp));
   // memcpy(&sensor_info.baroDepth, &sensorBuffer[8], sizeof(sensor_info.baroDepth));
@@ -305,6 +305,10 @@ void MainLayout::txRxFromSerial()
   // memcpy(&sensor_info.imuTemp, &sensorBuffer[28], sizeof(sensor_info.imuTemp));
 
   // memcpy(&sensor_info, sensorBuffer, SENSOR_BUFFER_SIZE);
+  
+  // Testing pPrint statement
+  // pPrintf("testing pPrintf %d\n", 5);
+  
   updateLabel(SENSOR_FIELDS);
   //}
 #else
@@ -365,7 +369,8 @@ void MainLayout::updateLabel(Label_Type label_type) {
       currentMotorSpeed5_Label->setText(QString("Thruster 5 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_left_thruster_speed));
       currentMotorSpeed6_Label->setText(QString("Thruster 6 Speed: %1").arg(ttcSohResp.thrusterInfo.thrusterSpeeds.back_right_thruster_speed));
 
-  // thrusterControllerState_Label = new QLabel("Thruster Controller State: ");
+      thrusterControllerState_Label->setText(QString("Thruster Controller State: %1").arg(ttcSohResp.thrusterInfo.thrusterControllerState));
+
       break;
     case MOTOR_SPEED:
       break;

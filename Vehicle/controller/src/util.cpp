@@ -69,13 +69,3 @@ void hexDump(uint8_t *data, int length) {
     Serial.print("\n");
     #endif
 }
-
-/*********************************************************
- * 
- * Name:  pPrint
- * Notes: See util.h
- * 
- *********************************************************/
-void pPrintf(const char* msg, ...) {
-    // TODO
-}

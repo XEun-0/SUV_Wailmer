@@ -8,9 +8,11 @@
 #include <QLabel>
 #include <QTimer>
 #include <QSpacerItem>
-#include "../../../ROS_ws/src/Common/serialib.h"
+#include <QTextStream>
+#include "serialib.h"
 #include "Common/util.h"
-#include "../../../Devices/Arduino/controller/include/Interface/ttcSohResp.h"
+#include "../../../Vehicle/controller/include/Interface/ttcSohResp.h"
+#include "pPrintf.h"
 
 namespace Ui {
   class MainLayout;
@@ -70,6 +72,7 @@ private:
   void initializeUI();
   void buttonSetup();
   void updateLabel(Label_Type label_type);
+  void dummyDecoder();
   int16_t calculateChecksum(uint8_t *data, size_t length);
 
   uint8_t bytesAvailable;

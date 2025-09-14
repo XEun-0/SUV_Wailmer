@@ -14,8 +14,8 @@ for arduino cli:
 	arduino-cli compile --fqbn arduino:avr:mega Sensors
 	arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:mega Sensors
 
-	arduino-cli compile --fqbn arduino:avr:mega ../../../Devices/Arduino/Serial_Test
-	arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:mega ../../../Devices/Arduino/Serial_Test
+	arduino-cli compile --fqbn arduino:avr:mega ../../../Vehicle/Serial_Test
+	arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:mega ../../../Vehicle/Serial_Test
 
 ros2:
 	ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_pubsub

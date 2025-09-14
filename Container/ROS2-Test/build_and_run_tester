@@ -11,7 +11,7 @@ docker build --no-cache -t ros2-test -f Dockerfile \
 
 # Run ROS2-Test container with appropiate parameters
 # NOTE: Run may succeed but the entrypoint script in the
-# dockerfile may fail due to perms. Delete build,logs,install
+# dockerfile may fail due to perms. Delete build, logs, install
 # folders inside ROS_ws/
 docker run -it -d --name ROS2-Test \
   --device /dev/ttyACM0:/dev/ttyACM0 \

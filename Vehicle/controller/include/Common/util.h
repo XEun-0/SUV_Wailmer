@@ -8,10 +8,10 @@
 #define Serial std::cout
 #endif
 #include "Interface/ttcSohResp.h"   // Structs and Enums
+#include "pPrintf.h"
 
 void compareSizes(char * name, int actualSize, int expectedSize);
 void checkStructSizes(void);
 void hexDump(uint8_t *data, int length);
-void pPrintf(const char* msg, ...);
 
 #endif // UTIL_H
