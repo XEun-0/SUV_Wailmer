@@ -36,6 +36,13 @@ RUN apt-get update && apt-get install -y \
     tk \   
     wget \
     figlet \
+    qtbase5-dev \
+    qttools5-dev-tools \
+    qtchooser \
+    qt5-qmake \
+    libqt5widgets5 \
+    libqt5gui5 \
+    libqt5core5a \
     build-essential \
     cmake \
     g++ \
@@ -76,5 +83,6 @@ RUN arduino-cli config init \
     && echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
 # Set entrypoint and default command
-ENTRYPOINT [ "/usr/local/bin/setup_ros2_test_suite.sh" ]
-CMD [ "/bin/bash" ]
+ENTRYPOINT [ "/bin/bash" ]
+# ENTRYPOINT [ "/usr/local/bin/setup_ros2_test_suite.sh" ]
+# CMD [ "/bin/bash" ]

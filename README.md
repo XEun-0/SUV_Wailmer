@@ -28,5 +28,5 @@ SUV - Small Underwater Vehicle. Codename WAILMER
 
 
 ---
-## 2.5 Setup VNC
-(TBD)
+## 2.5 Setup rpi
+## 2.6 Setup jetson orin nano
