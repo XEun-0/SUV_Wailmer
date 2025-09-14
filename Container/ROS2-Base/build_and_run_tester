@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Get host uid and gid
+_UID=$(id -u)
+_GID=$(id -g)
+IMAGE_NAME="suv-image"
+CONTAINER_NAME="SUV-BASE"
+
+# Remove old container if already exists
+docker rm -f ${CONTAINER_NAME}
+
+# Build ROS2-Test container
+docker build --no-cache -t ${IMAGE_NAME} -f Dockerfile \
+  --build-arg USER_UID=${_UID} \
+  --build-arg USER_GID=${_GID} .
+
+# Run ROS2-Test container with appropiate parameters
+# NOTE: Run may succeed but the entrypoint script in the
+# dockerfile may fail due to perms. Delete build,logs,install
+# folders inside ROS_ws/
+docker run -it -d --name ${CONTAINER_NAME} \
+  --device /dev/ttyACM0:/dev/ttyACM0 \
+  -e DISPLAY=$DISPLAY \
+  -v $(pwd)/../../:/workspaces/ROS2-SW \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  ${IMAGE_NAME}
+  
+# Tail entrypoint script running and detached bash process.
+docker logs -f ${CONTAINER_NAME} &
+
