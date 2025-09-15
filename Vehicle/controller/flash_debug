@@ -1,2 +1,4 @@
 #!/bin/bash
-pio run -e debug --target upload
+# pio run -e debug --target upload
+
+pio run -e debug && pio run -e debug -t upload && pio device monitor

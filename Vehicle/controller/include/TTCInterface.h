@@ -92,19 +92,35 @@ private:
     // Thruster control
     ThrusterState   currThrusterState;
 
-    Servo       left_thruster;
-    Servo       right_thruster;
-    Servo       front_right_thruster;
-    Servo       front_left_thruster;
-    Servo       back_left_thruster;
-    Servo       back_right_thruster;
+    // Servo       left_thruster;
+    // Servo       right_thruster;
+    // Servo       front_right_thruster;
+    // Servo       front_left_thruster;
+    // Servo       back_left_thruster;
+    // Servo       back_right_thruster;
 
-    int16_t     local_left_thruster_speed;
-    int16_t     local_right_thruster_speed;
-    int16_t     local_front_right_thruster_speed;
+    // Left side thrusters relative to camera
+    Servo rear_left_thruster;
+    Servo front_left_thruster;
+    Servo left_thruster;
+    int16_t     local_rear_left_thruster_speed;
     int16_t     local_front_left_thruster_speed;
-    int16_t     local_back_left_thruster_speed;
-    int16_t     local_back_right_thruster_speed;
+    int16_t     local_left_thruster_speed;
+
+    // Right side thrusters relative to camera
+    Servo rear_right_thruster;
+    Servo front_right_thruster;
+    Servo right_thruster;
+    int16_t     local_rear_right_thruster_speed;
+    int16_t     local_front_right_thruster_speed;
+    int16_t     local_right_thruster_speed;
+
+    // int16_t     local_left_thruster_speed;
+    // int16_t     local_right_thruster_speed;
+    // int16_t     local_front_right_thruster_speed;
+    // int16_t     local_front_left_thruster_speed;
+    // int16_t     local_back_left_thruster_speed;
+    // int16_t     local_back_right_thruster_speed;
 
     // Sensor information
     uint8_t   imuTemp;          // 1
@@ -136,6 +152,8 @@ private:
      *********************************************************/
     SensorInitStatusCodeType initializeBarometer();
     
+    void thrusterTest(Servo* t, int tpin);
+
     /*********************************************************
      * 
      * Name:  initializeIMU

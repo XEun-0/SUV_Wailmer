@@ -1,2 +1,5 @@
 #!/bin/bash
-pio run -e release --target upload
+# pio run -e release --target upload 
+
+# pio run -e release -t upload && pio device monitor
+pio run -e release && pio run -e release -t upload && pio device monitor

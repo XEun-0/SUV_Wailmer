@@ -7,6 +7,8 @@
 #define TTC_TASK_DELAY                  pdMS_TO_TICKS(20)
 #define MAIN_CONTROLLER_TASK_DELAY      pdMS_TO_TICKS(100)
 
+#define ONE_SECOND_DELAY                pdMS_TO_TICKS(1000)
+#define THREE_SECONDS_DELAY             pdMS_TO_TICKS(3000)
 #define TEN_SECONDS_DELAY               pdMS_TO_TICKS(10000) 
 #define FIVE_SECONDS_DELAY              pdMS_TO_TICKS(5000) 
 #define SYS_BAUD_RATE                   115200
@@ -31,12 +33,13 @@
 //=========== Thrusters ==================================
 //========================================================
 // Pins should 8-13
-#define LEFT_THRUSTER_PIN               8         // 8
-#define RIGHT_THRUSTER_PIN              13        // 13
-#define FRONT_RIGHT_THRUSTER_PIN        12        // 12
-#define FRONT_LEFT_THRUSTER_PIN         10        // 10
-#define BACK_LEFT_THRUSTER_PIN          9         // 9
-#define BACK_RIGHT_THRUSTER_PIN         11        // 11
+#define L_THRUSTER_PIN                  8           // 8
+#define REAR_L_THRUSTER_PIN             9           // 9
+#define FRONT_L_THRUSTER_PIN            10          // 10
+
+#define R_THRUSTER_PIN                  13          // 13
+#define REAR_R_THRUSTER_PIN             11          // 11
+#define FRONT_R_THRUSTER_PIN            12          // 12
 
 // Motor command macros
 #define MOTOR_STOP_COMMAND              1500

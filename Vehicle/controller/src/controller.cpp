@@ -71,9 +71,9 @@ void Controller::mainLoop(void) {
     
     while(1) {
         #ifdef SERIAL_OUT
-        //Serial.println("[Controller] this is inside main controller");
-        pPrintf("hello %d\n", 8);
-        //testSomething();
+        // Serial.println("[Controller] this is inside main controller");
+        // pPrintf("hello %d\n", 8);
+        // testSomething();
         #endif
 
         #ifdef TIME_FUNC
@@ -136,8 +136,9 @@ void Controller::getSendSOHSerial(void) {
     // process msg before sending out
 
     #if SERIAL_OUT
+    printf("[ HexDump ] print: ")
     hexDump((uint8_t *)&ttcSoh, sizeof(TTCSohRespType));
-    checkStructSizes();
+    // checkStructSizes();
     #endif
 
     // Serial.println(ttcSoh.sensorInfo.imuOrientX);

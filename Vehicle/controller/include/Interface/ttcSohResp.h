@@ -80,12 +80,16 @@ struct __attribute__((packed)) ThrusterIndividualTestProgress {
 // }
 
 struct ThrusterSpeedsType {
-    int16_t   left_thruster_speed;
-    int16_t   right_thruster_speed;
-    int16_t   front_right_thruster_speed;
-    int16_t   front_left_thruster_speed;
-    int16_t   back_left_thruster_speed;
-    int16_t   back_right_thruster_speed;
+    // Left side thruster speeds
+    int16_t     rear_left_thruster_speed;
+    int16_t     front_left_thruster_speed;
+    int16_t     left_thruster_speed;
+
+    // Right side thruster speeds
+    int16_t     rear_right_thruster_speed;
+    int16_t     front_right_thruster_speed;
+    int16_t     right_thruster_speed;
+
 }; // Total Size: 2 + 2 + 2 + 2 + 2 + 2 = 12 bytes
 
 #if defined(__AVR_ATmega2560__)

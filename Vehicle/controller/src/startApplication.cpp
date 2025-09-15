@@ -20,6 +20,7 @@
  *********************************************************/
 void setup() {
     Serial.begin(SYS_BAUD_RATE);
+    pPrintf("Starting SUV_WAILMER Software..\n");
 
     // Create main controller task
     xTaskCreate(

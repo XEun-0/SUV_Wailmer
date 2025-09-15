@@ -21,12 +21,13 @@ TTCInterface::TTCInterface(void) {
     // Thruster var init
     currThrusterState = THRUSTER_INIT;
 
-    local_left_thruster_speed         = 0;
-    local_right_thruster_speed        = 0;
-    local_front_right_thruster_speed  = 0;
-    local_front_left_thruster_speed   = 0;
-    local_back_left_thruster_speed    = 0;
-    local_back_right_thruster_speed   = 0;
+    local_rear_left_thruster_speed      = 0;
+    local_front_left_thruster_speed     = 0;
+    local_left_thruster_speed           = 0;
+
+    local_rear_right_thruster_speed     = 0;
+    local_front_right_thruster_speed    = 0;
+    local_right_thruster_speed          = 0;
 
     sohMutex = xSemaphoreCreateMutex();
     thruserBinarySemaphore = xSemaphoreCreateBinary(); // might not need
@@ -115,13 +116,14 @@ void TTCInterface::gatherThrusterSOH(TTCSohRespType *pInfo) {
         pInfo->thrusterInfo.thrusterControllerState = (ThrusterState)currThrusterState;
 
         if (currThrusterState == THRUSTER_GO) {
-            pInfo->thrusterInfo.thrusterSpeeds.left_thruster_speed = local_left_thruster_speed;
-            pInfo->thrusterInfo.thrusterSpeeds.right_thruster_speed = local_right_thruster_speed;
-            pInfo->thrusterInfo.thrusterSpeeds.front_right_thruster_speed = local_front_right_thruster_speed;
-
+            pInfo->thrusterInfo.thrusterSpeeds.rear_left_thruster_speed = local_rear_left_thruster_speed;
             pInfo->thrusterInfo.thrusterSpeeds.front_left_thruster_speed = local_front_left_thruster_speed;
-            pInfo->thrusterInfo.thrusterSpeeds.back_left_thruster_speed = local_back_left_thruster_speed;
-            pInfo->thrusterInfo.thrusterSpeeds.back_right_thruster_speed = local_back_right_thruster_speed;
+            pInfo->thrusterInfo.thrusterSpeeds.left_thruster_speed = local_left_thruster_speed;
+
+            pInfo->thrusterInfo.thrusterSpeeds.rear_right_thruster_speed = local_rear_right_thruster_speed;
+            pInfo->thrusterInfo.thrusterSpeeds.front_right_thruster_speed = local_front_right_thruster_speed;
+            pInfo->thrusterInfo.thrusterSpeeds.right_thruster_speed = local_right_thruster_speed;
+
         } else {
             memset(&pInfo->thrusterInfo.thrusterSpeeds, -1, sizeof(ThrusterSpeedsType));
         }
@@ -277,23 +279,31 @@ SensorInitStatusCodeType TTCInterface::initializeIMU() {
  * 
  *********************************************************/
 void TTCInterface::initializeThrusters(void) {
+
+    // Stagger thruster arming
+    // Left side thruster arming
+    thrusterTest(&left_thruster,        L_THRUSTER_PIN);
+    thrusterTest(&rear_left_thruster,   REAR_L_THRUSTER_PIN);
+    thrusterTest(&front_left_thruster,  FRONT_L_THRUSTER_PIN);
+
+    // Right side thruster arming
+    thrusterTest(&right_thruster,       R_THRUSTER_PIN);
+    thrusterTest(&rear_right_thruster,  REAR_R_THRUSTER_PIN);
+    thrusterTest(&front_right_thruster, FRONT_R_THRUSTER_PIN);
+}
+
+void TTCInterface::thrusterTest(Servo* t, int tpin) {
+    t->attach(tpin);
     
-    // Assigned thruster hardware pins to servo objects
-    left_thruster.attach(           LEFT_THRUSTER_PIN);
-    right_thruster.attach(          RIGHT_THRUSTER_PIN);
-    front_right_thruster.attach(    FRONT_RIGHT_THRUSTER_PIN);
-    front_left_thruster.attach(     FRONT_LEFT_THRUSTER_PIN);
-    back_left_thruster.attach(      BACK_LEFT_THRUSTER_PIN);
-    back_right_thruster.attach(     BACK_RIGHT_THRUSTER_PIN);
+    t->writeMicroseconds(MOTOR_STOP_COMMAND);
+    
+    vTaskDelay(TEN_SECONDS_DELAY);
 
-    // Send stop command to thrusters
-    left_thruster.writeMicroseconds(        MOTOR_STOP_COMMAND);
-    right_thruster.writeMicroseconds(       MOTOR_STOP_COMMAND);
-    front_right_thruster.writeMicroseconds( MOTOR_STOP_COMMAND);
-    front_left_thruster.writeMicroseconds(  MOTOR_STOP_COMMAND);
-    back_left_thruster.writeMicroseconds(   MOTOR_STOP_COMMAND);
-    back_right_thruster.writeMicroseconds(  MOTOR_STOP_COMMAND);
+    t->writeMicroseconds(SLOW_SPEED_UP);
 
+    vTaskDelay(FIVE_SECONDS_DELAY);
+    
+    t->writeMicroseconds(MOTOR_STOP_COMMAND);
 }
 
 /*********************************************************
@@ -478,12 +488,12 @@ void TTCInterface::processThrusterState() {
  *********************************************************/
 void TTCInterface::setThrusterSpeed(int16_t spds) {
     
-    left_thruster.writeMicroseconds(        spds);
-    right_thruster.writeMicroseconds(       spds);
-    front_right_thruster.writeMicroseconds( spds);
-    front_left_thruster.writeMicroseconds(  spds);
-    back_left_thruster.writeMicroseconds(   spds);
-    back_right_thruster.writeMicroseconds(  spds);
+    // left_thruster.writeMicroseconds(        spds);
+    // right_thruster.writeMicroseconds(       spds);
+    // front_right_thruster.writeMicroseconds( spds);
+    // front_left_thruster.writeMicroseconds(  spds);
+    // back_left_thruster.writeMicroseconds(   spds);
+    // back_right_thruster.writeMicroseconds(  spds);
 
 }
 
@@ -495,12 +505,12 @@ void TTCInterface::setThrusterSpeed(int16_t spds) {
  *********************************************************/
 void TTCInterface::setThrusterSpeed(ThrusterSpeedsType spds) {
     
-    left_thruster.writeMicroseconds(        spds.left_thruster_speed);
-    right_thruster.writeMicroseconds(       spds.right_thruster_speed);
-    front_right_thruster.writeMicroseconds( spds.front_right_thruster_speed);
-    front_left_thruster.writeMicroseconds(  spds.front_left_thruster_speed);
-    back_left_thruster.writeMicroseconds(   spds.back_left_thruster_speed);
-    back_right_thruster.writeMicroseconds(  spds.back_right_thruster_speed);
+    // left_thruster.writeMicroseconds(        spds.left_thruster_speed);
+    // right_thruster.writeMicroseconds(       spds.right_thruster_speed);
+    // front_right_thruster.writeMicroseconds( spds.front_right_thruster_speed);
+    // front_left_thruster.writeMicroseconds(  spds.front_left_thruster_speed);
+    // back_left_thruster.writeMicroseconds(   spds.back_left_thruster_speed);
+    // back_right_thruster.writeMicroseconds(  spds.back_right_thruster_speed);
 
 }
 
